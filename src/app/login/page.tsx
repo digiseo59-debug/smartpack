@@ -13,25 +13,32 @@ export default function LoginPage() {
     e.preventDefault()
     setLoading(true)
 
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
+    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+
     try {
-      const supabase = createClient()
-      console.log('[LOGIN] Supabase URL:', process.env.NEXT_PUBLIC_SUPABASE_URL)
-      console.log('[LOGIN] Calling signInWithPassword...')
+      const res = await fetch(`${supabaseUrl}/auth/v1/token?grant_type=password`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': supabaseKey,
+        },
+        body: JSON.stringify({ email, password }),
+      })
 
-      const result = await Promise.race([
-        supabase.auth.signInWithPassword({ email, password }),
-        new Promise<never>((_, reject) =>
-          setTimeout(() => reject(new Error('Login timeout after 10s')), 10000)
-        ),
-      ])
+      const data = await res.json()
 
-      console.log('[LOGIN] Result:', result.error ? result.error.message : 'success')
-
-      if (result.error) {
-        toast.error('Email ou mot de passe incorrect')
+      if (!res.ok || data.error) {
+        toast.error(data.error_description || data.msg || 'Email ou mot de passe incorrect')
         setLoading(false)
         return
       }
+
+      const supabase = createClient()
+      await supabase.auth.setSession({
+        access_token: data.access_token,
+        refresh_token: data.refresh_token,
+      })
 
       toast.success('Connexion reussie')
       window.location.href = '/ventes'

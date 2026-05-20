@@ -1,6 +1,7 @@
-import { createClient as supabaseCreateClient } from '@supabase/supabase-js'
+import { createClient as supabaseCreateClient, SupabaseClient } from '@supabase/supabase-js'
 
-let _client: ReturnType<typeof supabaseCreateClient> | null = null
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let _client: SupabaseClient<any, 'public', any> | null = null
 
 export function createClient() {
   if (_client) return _client
