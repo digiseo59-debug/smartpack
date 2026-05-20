@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import toast from 'react-hot-toast'
-import { createClient } from '@/lib/supabase/client'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
@@ -53,13 +52,17 @@ export default function LoginPage() {
         return
       }
 
-      setDebug(prev => prev + '\nLogin OK, setting session...')
+      setDebug(prev => prev + '\nLogin OK, storing session...')
 
-      const supabase = createClient()
-      await supabase.auth.setSession({
+      const storageKey = `sb-${new URL(supabaseUrl).hostname.split('.')[0]}-auth-token`
+      localStorage.setItem(storageKey, JSON.stringify({
         access_token: data.access_token,
         refresh_token: data.refresh_token,
-      })
+        token_type: data.token_type,
+        expires_in: data.expires_in,
+        expires_at: data.expires_at,
+        user: data.user,
+      }))
 
       setDebug(prev => prev + '\nRedirecting...')
       window.location.href = '/ventes'
