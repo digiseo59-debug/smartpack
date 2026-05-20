@@ -8,31 +8,52 @@ export default function LoginPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
+  const [debug, setDebug] = useState('')
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault()
     setLoading(true)
+    setDebug('Starting login...')
 
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+    if (!supabaseUrl || !supabaseKey) {
+      setDebug(`Missing env: URL=${!!supabaseUrl} KEY=${!!supabaseKey}`)
+      setLoading(false)
+      return
+    }
+
+    setDebug(`URL: ${supabaseUrl.substring(0, 30)}... KEY: ${supabaseKey.substring(0, 20)}...`)
 
     try {
-      const res = await fetch(`${supabaseUrl}/auth/v1/token?grant_type=password`, {
+      setDebug(prev => prev + '\nFetching...')
+      const controller = new AbortController()
+      const timeout = setTimeout(() => controller.abort(), 10000)
+
+      const res = await window.fetch(`${supabaseUrl}/auth/v1/token?grant_type=password`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'apikey': supabaseKey,
         },
         body: JSON.stringify({ email, password }),
+        signal: controller.signal,
       })
+
+      clearTimeout(timeout)
+      setDebug(prev => prev + `\nStatus: ${res.status}`)
 
       const data = await res.json()
 
       if (!res.ok || data.error) {
         toast.error(data.error_description || data.msg || 'Email ou mot de passe incorrect')
+        setDebug(prev => prev + `\nError: ${data.error_description || data.msg || data.error}`)
         setLoading(false)
         return
       }
+
+      setDebug(prev => prev + '\nLogin OK, setting session...')
 
       const supabase = createClient()
       await supabase.auth.setSession({
@@ -40,11 +61,13 @@ export default function LoginPage() {
         refresh_token: data.refresh_token,
       })
 
-      toast.success('Connexion reussie')
+      setDebug(prev => prev + '\nRedirecting...')
       window.location.href = '/ventes'
     } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err)
       console.error('[LOGIN] Error:', err)
-      toast.error(err instanceof Error ? err.message : 'Erreur de connexion')
+      setDebug(prev => prev + `\nCATCH: ${msg}`)
+      toast.error(msg)
       setLoading(false)
     }
   }
@@ -157,6 +180,10 @@ export default function LoginPage() {
                 )}
               </button>
             </form>
+
+            {debug && (
+              <pre className="mt-4 p-3 bg-gray-100 text-xs text-gray-700 rounded-lg whitespace-pre-wrap break-all max-h-40 overflow-auto">{debug}</pre>
+            )}
 
             <p className="text-center text-gray-300 text-xs mt-10">
               SmartPack v1.0 — Emballage Meknes
