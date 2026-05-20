@@ -48,43 +48,37 @@ export default function AchatsPage() {
 
   return (
     <>
-      <FilterTabs tabs={filterOptions} active={filter} onChange={setFilter} color="orange" />
-
-      <div className="px-4 pt-1 pb-2">
-        <Tag variant="orange">
-          <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z" />
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0" />
-          </svg>
-          Fournisseurs
-        </Tag>
-      </div>
+      <FilterTabs tabs={filterOptions} active={filter} onChange={setFilter} />
 
       {loading ? (
-        <div className="flex justify-center py-10">
-          <div className="w-9 h-9 border-3 border-gray-200 border-t-orange rounded-full animate-spin" />
+        <div className="flex justify-center py-16">
+          <div className="w-9 h-9 border-[2.5px] border-gray-200 border-t-gold rounded-full animate-spin" />
         </div>
       ) : achats.length === 0 ? (
-        <div className="text-center py-16 text-gray-400">
-          <svg className="w-12 h-12 mx-auto mb-3 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z" />
-          </svg>
-          <p className="text-sm">Aucun achat trouve</p>
+        <div className="text-center py-20">
+          <div className="w-16 h-16 mx-auto mb-4 bg-gray-50 rounded-2xl flex items-center justify-center border border-gray-100">
+            <svg className="w-8 h-8 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+            </svg>
+          </div>
+          <p className="text-sm text-gray-500 font-semibold">Aucun achat</p>
         </div>
       ) : (
-        <div className="space-y-2 px-4">
+        <div className="px-4 lg:px-6 pb-4 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
           {achats.map((achat) => (
-            <div key={achat.id} className="bg-white rounded-xl p-3.5 shadow-[0_1px_4px_rgba(0,0,0,0.06)]">
-              <div className="flex justify-between items-start mb-2">
-                <span className="text-xs text-gray-400">{formatDateShort(achat.date)}</span>
-                <div className="text-lg font-bold text-orange">{formatDH(achat.total_amount)}</div>
+            <div key={achat.id} className="card card-hover p-4">
+              <div className="flex justify-between items-start mb-3">
+                <div>
+                  <p className="text-xs text-gray-400">{formatDateShort(achat.date)}</p>
+                  <h3 className="text-[15px] font-bold text-gray-900 mt-1">
+                    {(achat.supplier as unknown as { name: string })?.name ?? 'Fournisseur inconnu'}
+                  </h3>
+                </div>
+                <p className="text-lg font-bold gold-text">{formatDH(achat.total_amount)}</p>
               </div>
-              <div className="text-[15px] font-semibold mb-2.5">
-                {(achat.supplier as unknown as { name: string })?.name ?? 'Fournisseur inconnu'}
-              </div>
-              <div className="flex gap-2 flex-wrap">
+              <div className="flex gap-1.5 flex-wrap">
                 <Tag variant="user">
-                  par {(achat.creator as unknown as { full_name: string })?.full_name ?? 'Inconnu'}
+                  {(achat.creator as unknown as { full_name: string })?.full_name ?? 'Inconnu'}
                 </Tag>
                 <Tag variant="cash">{getPaymentLabel(achat.payment_mode)}</Tag>
                 {achat.is_credit && <Tag variant="credit">Credit: {formatDH(achat.credit_amount)}</Tag>}
@@ -94,7 +88,7 @@ export default function AchatsPage() {
         </div>
       )}
 
-      {isAdmin && <FabButton onClick={() => router.push('/achats/nouveau')} variant="orange" />}
+      {isAdmin && <FabButton onClick={() => router.push('/achats/nouveau')} />}
     </>
   )
 }

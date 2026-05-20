@@ -55,31 +55,31 @@ export default function ClientsPage() {
 
   return (
     <>
-      <div className="px-4 py-3">
+      <div className="px-4 lg:px-6 py-4">
         <SearchBox placeholder="Rechercher un client..." value={search} onChange={setSearch} />
       </div>
 
       {loading ? (
-        <div className="flex justify-center py-10">
-          <div className="w-9 h-9 border-3 border-gray-200 border-t-primary rounded-full animate-spin" />
+        <div className="flex justify-center py-16">
+          <div className="w-9 h-9 border-[2.5px] border-gray-200 border-t-gold rounded-full animate-spin" />
         </div>
       ) : (
-        <div className="px-4">
+        <div className="px-4 lg:px-6 pb-4 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
           {filtered.map(c => (
-            <div key={c.id} className="flex items-center py-3 border-b border-gray-50">
-              <div className="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center text-base mr-3 shrink-0">
+            <div key={c.id} className="card p-4 flex items-center gap-3">
+              <div className="w-11 h-11 rounded-xl gradient-dark text-gold flex items-center justify-center text-base font-bold shrink-0">
                 {c.name.charAt(0).toUpperCase()}
               </div>
-              <div className="flex-1">
-                <div className="text-sm font-semibold">{c.name}</div>
-                {c.location && <div className="text-xs text-gray-400">{c.location}</div>}
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-bold text-gray-900 truncate">{c.name}</p>
+                {c.location && <p className="text-xs text-gray-400 truncate">{c.location}</p>}
               </div>
               {c.credit > 0 ? (
-                <span className="text-xs font-semibold px-2.5 py-1 rounded-md bg-red-light text-red">
-                  Credit: {formatDH(c.credit)}
+                <span className="text-xs font-bold px-2.5 py-1 rounded-lg bg-red-light text-red shrink-0">
+                  {formatDH(c.credit)}
                 </span>
               ) : (
-                <span className="text-xs font-semibold px-2.5 py-1 rounded-md bg-primary-light text-primary">
+                <span className="text-xs font-bold px-2.5 py-1 rounded-lg bg-green-light text-green shrink-0">
                   Solde
                 </span>
               )}
@@ -93,36 +93,18 @@ export default function ClientsPage() {
       <ModalSheet open={newClientModal} onClose={() => setNewClientModal(false)} title="Nouveau client">
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-600 mb-1.5">Nom *</label>
-            <input
-              value={newName}
-              onChange={(e) => setNewName(e.target.value)}
-              placeholder="Nom du client"
-              className="w-full px-3.5 py-3 border-[1.5px] border-gray-200 rounded-[10px] text-sm outline-none focus:border-primary"
-            />
+            <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Nom *</label>
+            <input value={newName} onChange={(e) => setNewName(e.target.value)} placeholder="Nom du client" className="input-field" />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-600 mb-1.5">Ville</label>
-            <input
-              value={newLocation}
-              onChange={(e) => setNewLocation(e.target.value)}
-              placeholder="Ville / Emplacement"
-              className="w-full px-3.5 py-3 border-[1.5px] border-gray-200 rounded-[10px] text-sm outline-none focus:border-primary"
-            />
+            <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Ville</label>
+            <input value={newLocation} onChange={(e) => setNewLocation(e.target.value)} placeholder="Ville / Emplacement" className="input-field" />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-600 mb-1.5">Telephone</label>
-            <input
-              value={newPhone}
-              onChange={(e) => setNewPhone(e.target.value)}
-              placeholder="06XXXXXXXX"
-              className="w-full px-3.5 py-3 border-[1.5px] border-gray-200 rounded-[10px] text-sm outline-none focus:border-primary"
-            />
+            <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Telephone</label>
+            <input value={newPhone} onChange={(e) => setNewPhone(e.target.value)} placeholder="06XXXXXXXX" className="input-field" />
           </div>
-          <button
-            onClick={createNewClient}
-            className="w-full py-3.5 bg-primary text-white border-none rounded-[10px] text-[15px] font-semibold flex items-center justify-center gap-2"
-          >
+          <button onClick={createNewClient} className="w-full py-3.5 btn-gold text-[15px] rounded-xl">
             Creer le client
           </button>
         </div>

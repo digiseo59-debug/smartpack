@@ -1,8 +1,10 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { SearchBox } from '@/components/ui/search-box'
+import { FabButton } from '@/components/layout/fab-button'
 import { formatDH, getStockStatus } from '@/lib/utils/format'
 import { useAuth } from '@/lib/auth/auth-context'
 import type { Product, Category } from '@/types/database'
@@ -15,6 +17,7 @@ export default function StockPage() {
   const [search, setSearch] = useState('')
   const [loading, setLoading] = useState(true)
   const { isAdmin } = useAuth()
+  const router = useRouter()
   const supabase = createClient()
 
   useEffect(() => {
@@ -41,41 +44,42 @@ export default function StockPage() {
     return true
   })
 
+  const totalStock = filtered.reduce((sum, p) => sum + p.stock, 0)
+  const totalValue = filtered.reduce((sum, p) => sum + p.stock * p.cost_price, 0)
+
   return (
     <>
-      {/* Stock type filter */}
-      <div className="flex gap-2 px-4 py-3 overflow-x-auto">
+      {/* Type filter */}
+      <div className="flex gap-2 px-4 lg:px-6 py-4 overflow-x-auto">
         {[
-          { key: 'all', label: 'Toutes', icon: 'M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z' },
-          { key: 'normal', label: 'Normal', icon: 'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4' },
-          { key: 'serigraphie', label: 'Serigraphie', icon: 'M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2z' },
+          { key: 'all', label: 'Tous' },
+          { key: 'normal', label: 'Normal' },
+          { key: 'serigraphie', label: 'Serigraphie' },
         ].map(t => (
           <button
             key={t.key}
             onClick={() => setStockType(t.key)}
-            className={`px-4 py-2 rounded-full text-xs font-semibold border-[1.5px] whitespace-nowrap flex items-center gap-1.5 transition-all ${
-              stockType === t.key ? 'bg-primary text-white border-primary' : 'bg-white text-gray-500 border-gray-200'
+            className={`px-5 py-2 rounded-xl text-[13px] font-semibold whitespace-nowrap transition-all cursor-pointer ${
+              stockType === t.key
+                ? 'bg-primary text-white shadow-lg shadow-black/10'
+                : 'card text-gray-500 hover:text-gray-700'
             }`}
           >
-            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={t.icon} />
-            </svg>
             {t.label}
           </button>
         ))}
       </div>
 
-      {/* Search */}
-      <div className="px-4">
+      <div className="px-4 lg:px-6">
         <SearchBox placeholder="Rechercher un produit..." value={search} onChange={setSearch} />
       </div>
 
-      {/* Category filter */}
-      <div className="flex gap-2 px-4 pb-2 overflow-x-auto">
+      {/* Category pills */}
+      <div className="flex gap-2 px-4 lg:px-6 py-3 overflow-x-auto">
         <button
           onClick={() => setCategoryFilter('all')}
-          className={`px-4 py-2 rounded-full text-xs font-semibold border-[1.5px] whitespace-nowrap transition-all ${
-            categoryFilter === 'all' ? 'bg-primary text-white border-primary' : 'bg-white text-gray-500 border-gray-200'
+          className={`px-4 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
+            categoryFilter === 'all' ? 'bg-gold text-white' : 'card text-gray-500'
           }`}
         >
           Toutes
@@ -84,8 +88,8 @@ export default function StockPage() {
           <button
             key={cat.id}
             onClick={() => setCategoryFilter(cat.slug)}
-            className={`px-4 py-2 rounded-full text-xs font-semibold border-[1.5px] whitespace-nowrap transition-all ${
-              categoryFilter === cat.slug ? 'bg-primary text-white border-primary' : 'bg-white text-gray-500 border-gray-200'
+            className={`px-4 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
+              categoryFilter === cat.slug ? 'bg-gold text-white' : 'card text-gray-500'
             }`}
           >
             {cat.name}
@@ -93,47 +97,67 @@ export default function StockPage() {
         ))}
       </div>
 
+      {/* Stats */}
+      {!loading && filtered.length > 0 && (
+        <div className="grid grid-cols-2 gap-3 px-4 lg:px-6 mb-3">
+          <div className="card p-4">
+            <p className="text-xs text-gray-400 font-semibold uppercase tracking-wider">Stock total</p>
+            <p className="text-xl font-bold mt-1">{totalStock}</p>
+          </div>
+          <div className="card p-4">
+            <p className="text-xs text-gray-400 font-semibold uppercase tracking-wider">Valeur FIFO</p>
+            <p className="text-xl font-bold gold-text mt-1">{formatDH(totalValue)}</p>
+          </div>
+        </div>
+      )}
+
       {loading ? (
-        <div className="flex justify-center py-10">
-          <div className="w-9 h-9 border-3 border-gray-200 border-t-primary rounded-full animate-spin" />
+        <div className="flex justify-center py-16">
+          <div className="w-9 h-9 border-[2.5px] border-gray-200 dark:border-gray-700 border-t-gold rounded-full animate-spin" />
         </div>
       ) : filtered.length === 0 ? (
-        <div className="text-center py-16 text-gray-400">
-          <p className="text-sm">Aucun produit trouve</p>
+        <div className="text-center py-16">
+          <p className="text-sm text-gray-400 font-medium">Aucun produit trouve</p>
         </div>
       ) : (
-        <div className="space-y-2 px-4 pb-4">
+        <div className="px-4 lg:px-6 pb-4 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
           {filtered.map(p => {
             const status = getStockStatus(p.stock, p.low_stock_threshold)
             return (
-              <div key={p.id} className="bg-white rounded-xl px-4 py-3.5 flex justify-between items-center">
-                <div>
-                  <h4 className="text-sm font-semibold">{p.name}</h4>
-                  <div className="text-xs text-gray-400 mt-1">
-                    Prix ref: <span className="font-semibold text-foreground">{formatDH(p.price)}</span>
-                  </div>
+              <div
+                key={p.id}
+                onClick={() => isAdmin && router.push('/admin/products')}
+                className={`card ${isAdmin ? 'card-hover cursor-pointer' : ''} p-4 flex justify-between items-center`}
+              >
+                <div className="flex-1 min-w-0">
+                  <h4 className="text-sm font-bold truncate">{p.name}</h4>
+                  <p className="text-xs text-gray-400 mt-1">
+                    Prix: <span className="font-semibold">{formatDH(p.price)}</span>
+                  </p>
                   {status === 'low' && (
-                    <span className="inline-block px-2.5 py-0.5 rounded-md text-[11px] font-semibold bg-orange-light text-orange mt-1">
+                    <span className="inline-block px-2.5 py-0.5 rounded-md text-[10px] font-bold bg-orange-light text-orange mt-1.5">
                       Stock bas
                     </span>
                   )}
                   {status === 'out' && (
-                    <span className="inline-block px-2.5 py-0.5 rounded-md text-[11px] font-semibold bg-red-light text-red mt-1">
+                    <span className="inline-block px-2.5 py-0.5 rounded-md text-[10px] font-bold bg-red-light text-red mt-1.5">
                       Rupture
                     </span>
                   )}
                 </div>
-                <div className="text-right">
-                  <div className={`text-xl font-bold ${status === 'ok' ? 'text-primary' : status === 'low' ? 'text-orange' : 'text-red'}`}>
+                <div className="text-right ml-3">
+                  <div className={`text-2xl font-bold ${status === 'ok' ? '' : status === 'low' ? 'text-orange' : 'text-red'}`}>
                     {p.stock}
                   </div>
-                  <div className="text-[11px] text-gray-400">Piece</div>
+                  <div className="text-[10px] text-gray-400 font-medium">unites</div>
                 </div>
               </div>
             )
           })}
         </div>
       )}
+
+      {isAdmin && <FabButton onClick={() => router.push('/admin/products')} />}
     </>
   )
 }

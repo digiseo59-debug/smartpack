@@ -55,10 +55,10 @@ export default function NewPurchasePage() {
 
     setSubmitting(true)
 
-    // Get counter
     const { data: counter } = await supabase.from('settings').select('value').eq('key', 'purchase_counter').single()
-    const nextId = counter?.value?.next_id ?? 1
-    const refNumber = `ACH-${counter?.value?.year ?? 2026}-${String(nextId).padStart(3, '0')}`
+    const counterValue = counter?.value as Record<string, number> | null
+    const nextId = counterValue?.next_id ?? 1
+    const refNumber = `ACH-${counterValue?.year ?? 2026}-${String(nextId).padStart(3, '0')}`
 
     const { error } = await supabase.from('purchases').insert({
       ref_number: refNumber,
@@ -73,7 +73,7 @@ export default function NewPurchasePage() {
 
     if (!error) {
       await supabase.from('settings').update({
-        value: { ...counter?.value, next_id: nextId + 1 },
+        value: { ...counterValue, next_id: nextId + 1 },
       }).eq('key', 'purchase_counter')
 
       toast.success('Achat cree avec succes')

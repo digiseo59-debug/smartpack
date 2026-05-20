@@ -7,21 +7,17 @@ interface FilterTabsProps {
   color?: 'green' | 'orange'
 }
 
-export function FilterTabs({ tabs, active, onChange, color = 'green' }: FilterTabsProps) {
-  const activeClass = color === 'green'
-    ? 'bg-primary text-white border-primary'
-    : 'bg-orange text-white border-orange'
-
+export function FilterTabs({ tabs, active, onChange }: FilterTabsProps) {
   return (
-    <div className="flex gap-2 px-4 py-3 bg-white overflow-x-auto scrollbar-none">
+    <div className="flex gap-2 px-4 lg:px-6 py-4 overflow-x-auto scrollbar-none">
       {tabs.map((tab) => (
         <button
           key={tab.key}
           onClick={() => onChange(tab.key)}
-          className={`px-4 py-1.5 rounded-full text-[13px] font-medium border whitespace-nowrap transition-all ${
+          className={`px-5 py-2 rounded-xl text-[13px] font-semibold whitespace-nowrap transition-all ${
             active === tab.key
-              ? activeClass
-              : 'bg-white text-gray-500 border-gray-300'
+              ? 'bg-primary text-white shadow-lg shadow-black/10'
+              : 'bg-white text-gray-500 hover:text-gray-700 hover:bg-gray-50 border border-gray-100'
           }`}
         >
           {tab.label}

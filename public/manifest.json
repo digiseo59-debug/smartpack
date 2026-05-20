@@ -4,8 +4,8 @@
   "description": "Gestion commerciale Smart Pack - Emballage Meknes",
   "start_url": "/ventes",
   "display": "standalone",
-  "background_color": "#f5f5f5",
-  "theme_color": "#2d7a3e",
+  "background_color": "#fafafa",
+  "theme_color": "#1a1a1a",
   "lang": "fr",
   "orientation": "portrait",
   "icons": [

@@ -1,9 +1,10 @@
 'use client'
 
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { AppHeader } from '@/components/layout/app-header'
 import { BottomNav } from '@/components/layout/bottom-nav'
 import { useAuth } from '@/lib/auth/auth-context'
+import { useEffect } from 'react'
 
 const pageTitles: Record<string, string> = {
   '/ventes': 'Ventes',
@@ -16,19 +17,34 @@ const pageTitles: Record<string, string> = {
   '/admin': 'Administration',
   '/admin/users': 'Utilisateurs',
   '/admin/categories': 'Categories',
+  '/admin/products': 'Produits',
+  '/admin/suppliers': 'Fournisseurs',
+  '/admin/expenses': 'Depenses',
   '/admin/settings': 'Parametres',
 }
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
-  const { role, loading } = useAuth()
+  const router = useRouter()
+  const { user, profile, role, loading } = useAuth()
+
+  useEffect(() => {
+    if (!loading && !user) {
+      window.location.href = '/login'
+    }
+  }, [loading, user])
 
   const title = pageTitles[pathname] ?? 'SmartPack'
 
-  if (loading) {
+  if (loading || !user || !profile) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="w-9 h-9 border-3 border-gray-200 border-t-primary rounded-full animate-spin" />
+      <div className="min-h-screen flex items-center justify-center bg-[#f8faf9]">
+        <div className="text-center">
+          <div className="w-12 h-12 mx-auto mb-3 rounded-2xl overflow-hidden ring-2 ring-gold/20">
+            <img src="/logo.jpg" alt="SmartPack" className="w-full h-full object-cover" />
+          </div>
+          <div className="w-8 h-8 border-[2.5px] border-gray-200 border-t-gold rounded-full animate-spin mx-auto mt-3" />
+        </div>
       </div>
     )
   }
@@ -38,10 +54,14 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <>
       <AppHeader title={title} />
-      <main className="pt-14 pb-[70px] min-h-screen animate-fade-in">
-        {children}
-      </main>
-      {!hideNav && <BottomNav role={role} />}
+      <div className="flex">
+        {!hideNav && <BottomNav role={role} />}
+        <main className={`pt-16 pb-20 lg:pb-6 min-h-screen w-full animate-fade-in ${!hideNav ? 'lg:pl-64' : ''}`}>
+          <div className="max-w-6xl mx-auto">
+            {children}
+          </div>
+        </main>
+      </div>
     </>
   )
 }

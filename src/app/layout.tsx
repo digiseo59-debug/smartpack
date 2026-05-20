@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google'
 import './globals.css'
 import { ToastProvider } from '@/components/ui/toast-provider'
 import { AuthProvider } from '@/lib/auth/auth-context'
+import { ThemeProvider } from '@/lib/theme/theme-context'
 
 const inter = Inter({
   subsets: ['latin'],
@@ -26,7 +27,7 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 1,
   userScalable: false,
-  themeColor: '#2d7a3e',
+  themeColor: '#1a1a1a',
 }
 
 export default function RootLayout({
@@ -35,12 +36,14 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="fr" className={inter.variable}>
+    <html lang="fr" className={inter.variable} suppressHydrationWarning>
       <body className="min-h-screen bg-background font-sans">
-        <AuthProvider>
-          {children}
-          <ToastProvider />
-        </AuthProvider>
+        <ThemeProvider>
+          <AuthProvider>
+            {children}
+            <ToastProvider />
+          </AuthProvider>
+        </ThemeProvider>
       </body>
     </html>
   )
