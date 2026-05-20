@@ -37,7 +37,7 @@ export default function LoginPage() {
             <img src="/logo.jpg" alt="SmartPack" className="w-full h-full object-cover" />
           </div>
           <h1 className="text-2xl font-bold text-white">SmartPack</h1>
-          <p className="text-white/70 text-sm mt-1">MolEmballage.ma - Gestion Commerciale</p>
+          <p className="text-white/70 text-sm mt-1">Smart Pack - Gestion Commerciale</p>
         </div>
 
         <form onSubmit={handleLogin} className="bg-white rounded-2xl p-6 shadow-lg">
@@ -86,7 +86,7 @@ export default function LoginPage() {
         </form>
 
         <p className="text-center text-white/50 text-xs mt-6">
-          SmartPack v1.0 - MolEmballage.ma
+          SmartPack v1.0 - Emballage Meknes
         </p>
       </div>
     </div>

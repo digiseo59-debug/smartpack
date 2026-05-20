@@ -12,7 +12,7 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: 'SmartPack - Gestion Commerciale',
-  description: 'Application de gestion commerciale MolEmballage.ma',
+  description: 'Application de gestion commerciale Smart Pack - Emballage Meknes',
   manifest: '/manifest.json',
   appleWebApp: {
     capable: true,

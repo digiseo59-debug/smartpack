@@ -1,7 +1,7 @@
 {
-  "name": "SmartPack - MolEmballage",
+  "name": "SmartPack - Emballage Meknes",
   "short_name": "SmartPack",
-  "description": "Gestion commerciale MolEmballage.ma - Meknes",
+  "description": "Gestion commerciale Smart Pack - Emballage Meknes",
   "start_url": "/ventes",
   "display": "standalone",
   "background_color": "#f5f5f5",

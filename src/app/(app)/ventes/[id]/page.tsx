@@ -40,7 +40,7 @@ export default function SaleDetailPage() {
   function shareWhatsApp() {
     if (!sale) return
     const clientName = (sale.client as unknown as { name: string })?.name ?? 'Client'
-    let text = `*MolEmballage.ma*\nBon de vente N° ${sale.ref_number}\n${formatDate(sale.date)}\nClient: ${clientName}\n\n`
+    let text = `*Smart Pack*\nBon de vente N° ${sale.ref_number}\n${formatDate(sale.date)}\nClient: ${clientName}\n\n`
     items.forEach(item => {
       text += `${item.product_name} x${item.quantity} = ${formatDH(item.subtotal)}\n`
     })
@@ -77,7 +77,7 @@ export default function SaleDetailPage() {
       {/* Receipt */}
       <div className="bg-white rounded-xl border border-gray-200 overflow-hidden mb-4">
         <div className="bg-primary text-white p-4 text-center">
-          <h3 className="text-base font-semibold mb-1">MolEmballage.ma</h3>
+          <h3 className="text-base font-semibold mb-1">Smart Pack</h3>
           <p className="text-[11px] opacity-90">Bon de vente N° {sale.ref_number}</p>
         </div>
         <div className="p-4">
