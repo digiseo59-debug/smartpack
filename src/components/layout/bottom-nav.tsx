@@ -67,15 +67,15 @@ export function BottomNav({ role }: BottomNavProps) {
       {/* Desktop sidebar — glass panel */}
       <nav className="hidden lg:flex fixed left-0 top-[72px] bottom-0 w-[280px] z-[999] flex-col">
         <div className="absolute inset-0 bg-surface/80 glass border-r border-border" />
-        <div className="relative flex-1 flex flex-col py-8 px-4">
-          <div className="space-y-1.5">
+        <div className="relative flex-1 flex flex-col py-4 px-4 overflow-y-auto">
+          <div className="space-y-1">
             {items.map((item) => {
               const isActive = pathname.startsWith(item.href)
               return (
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`flex items-center gap-3.5 px-4 py-3.5 rounded-2xl text-[13px] font-semibold transition-all ${
+                  className={`flex items-center gap-3 px-3.5 py-3 rounded-2xl text-[13px] font-semibold transition-all ${
                     isActive
                       ? 'hero-stat text-white shadow-lg'
                       : 'text-muted hover:text-foreground hover:bg-gold/5'
@@ -94,11 +94,11 @@ export function BottomNav({ role }: BottomNavProps) {
           </div>
 
           {role === 'admin' && (
-            <div className="mt-8 pt-6 border-t border-border">
-              <p className="px-4 text-[9px] font-bold text-muted/40 uppercase tracking-[0.2em] mb-3">Administration</p>
+            <div className="mt-4 pt-4 border-t border-border">
+              <p className="px-3.5 text-[9px] font-bold text-muted/40 uppercase tracking-[0.2em] mb-2">Administration</p>
               <Link
                 href="/admin"
-                className={`flex items-center gap-3.5 px-4 py-3.5 rounded-2xl text-[13px] font-semibold transition-all ${
+                className={`flex items-center gap-3 px-3.5 py-3 rounded-2xl text-[13px] font-semibold transition-all ${
                   pathname.startsWith('/admin')
                     ? 'hero-stat text-white shadow-lg'
                     : 'text-muted hover:text-foreground hover:bg-gold/5'
@@ -115,8 +115,8 @@ export function BottomNav({ role }: BottomNavProps) {
             </div>
           )}
 
-          <div className="mt-auto px-3 py-4">
-            <div className="hero-stat p-4">
+          <div className="mt-auto px-2 py-3">
+            <div className="hero-stat p-3">
               <div className="relative z-10 flex items-center gap-2.5">
                 <div className="w-8 h-8 rounded-xl gradient-gold flex items-center justify-center shadow-lg shadow-gold/20">
                   <span className="text-[10px] font-black text-[#1a1a1a]">SP</span>
