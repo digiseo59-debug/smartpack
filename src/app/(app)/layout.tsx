@@ -55,7 +55,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       <AppHeader title={title} />
       <div className="flex">
         {!hideNav && <BottomNav role={role} />}
-        <main className={`pt-16 pb-20 lg:pb-6 min-h-screen w-full animate-fade-in ${!hideNav ? 'lg:pl-64' : ''}`}>
+        <main className={`pt-[72px] pb-24 lg:pb-6 min-h-screen w-full animate-fade-in ${!hideNav ? 'lg:pl-[280px]' : ''}`}>
           <div className="max-w-6xl mx-auto">
             {children}
           </div>

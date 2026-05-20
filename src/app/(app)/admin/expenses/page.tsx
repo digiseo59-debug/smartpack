@@ -45,47 +45,83 @@ export default function ExpensesPage() {
   const total = expenses.reduce((sum, e) => sum + e.amount, 0)
 
   return (
-    <div className="px-4 lg:px-6 py-4">
-      <button onClick={() => router.back()} className="flex items-center gap-2 text-sm text-muted hover:text-foreground mb-4 transition-colors cursor-pointer">
+    <div className="px-4 lg:px-6 py-4 space-y-4">
+      <button onClick={() => router.back()} className="flex items-center gap-2 text-sm text-muted hover:text-foreground transition-colors cursor-pointer">
         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
         </svg>
         Retour
       </button>
 
-      <div className="card p-4 mb-4 flex items-center gap-3 border-red/20">
-        <div className="w-10 h-10 rounded-xl bg-red-light flex items-center justify-center shrink-0">
-          <svg className="w-5 h-5 text-red" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-          </svg>
-        </div>
-        <div>
-          <div className="text-[10px] font-bold text-muted uppercase tracking-widest">Total charges</div>
-          <div className="text-lg font-bold text-red">{formatDH(total)}</div>
+      {/* Total hero */}
+      <div className="hero-stat p-5">
+        <div className="relative z-10 flex items-center justify-between">
+          <div>
+            <p className="text-[10px] font-bold text-white/40 uppercase tracking-widest">{expenses.length} charges</p>
+            <p className="text-2xl font-black text-red mt-1 stat-number">{formatDH(total)}</p>
+          </div>
+          <div className="w-12 h-12 rounded-2xl bg-red/15 flex items-center justify-center">
+            <svg className="w-6 h-6 text-red" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+            </svg>
+          </div>
         </div>
       </div>
 
       <button onClick={() => setModalOpen(true)}
-        className="w-full py-3 bg-red text-white rounded-xl text-sm font-semibold mb-4 cursor-pointer">
+        className="w-full py-3.5 btn-gold rounded-xl text-sm font-bold cursor-pointer">
         + Ajouter une charge
       </button>
 
       {loading ? (
         <div className="flex justify-center py-10">
-          <div className="w-9 h-9 border-[2.5px] border-border border-t-red rounded-full animate-spin" />
+          <div className="w-9 h-9 border-[2.5px] border-border border-t-gold rounded-full animate-spin" />
         </div>
       ) : (
-        <div className="space-y-2">
-          {expenses.map(e => (
-            <div key={e.id} className="card p-4 flex justify-between items-center">
-              <div>
-                <div className="text-sm font-semibold text-foreground">{e.description}</div>
-                <div className="text-xs text-muted mt-0.5">{formatDate(e.date)} - {e.category}</div>
+        <>
+          {/* Desktop table */}
+          <div className="hidden lg:block glass-card overflow-hidden">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b border-border">
+                  <th className="text-left px-5 py-3.5 text-[10px] font-bold text-muted uppercase tracking-widest">Date</th>
+                  <th className="text-left px-5 py-3.5 text-[10px] font-bold text-muted uppercase tracking-widest">Description</th>
+                  <th className="text-left px-5 py-3.5 text-[10px] font-bold text-muted uppercase tracking-widest">Categorie</th>
+                  <th className="text-right px-5 py-3.5 text-[10px] font-bold text-muted uppercase tracking-widest">Montant</th>
+                </tr>
+              </thead>
+              <tbody>
+                {expenses.map(e => (
+                  <tr key={e.id} className="border-b border-border/50 hover:bg-gold/3 transition-colors">
+                    <td className="px-5 py-3.5 text-xs text-muted font-medium">{formatDate(e.date)}</td>
+                    <td className="px-5 py-3.5 text-sm font-bold text-foreground">{e.description}</td>
+                    <td className="px-5 py-3.5">
+                      <span className="text-[10px] font-bold px-2.5 py-1 rounded-lg bg-red/8 text-red uppercase">{e.category}</span>
+                    </td>
+                    <td className="px-5 py-3.5 text-right text-sm font-bold text-red">-{formatDH(e.amount)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Mobile cards */}
+          <div className="lg:hidden space-y-2.5">
+            {expenses.map(e => (
+              <div key={e.id} className="glass-card p-4 flex justify-between items-center">
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-bold text-foreground truncate">{e.description}</p>
+                  <p className="text-xs text-muted mt-0.5">
+                    {formatDate(e.date)}
+                    <span className="mx-1.5 text-border">·</span>
+                    <span className="text-red/70 font-semibold uppercase text-[10px]">{e.category}</span>
+                  </p>
+                </div>
+                <span className="text-sm font-black text-red ml-3 stat-number">-{formatDH(e.amount)}</span>
               </div>
-              <span className="text-sm font-bold text-red">-{formatDH(e.amount)}</span>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        </>
       )}
 
       <ModalSheet open={modalOpen} onClose={() => setModalOpen(false)} title="Nouvelle charge">
@@ -111,7 +147,7 @@ export default function ExpensesPage() {
             </select>
           </div>
           <button onClick={createExpense}
-            className="w-full py-3.5 bg-red text-white rounded-xl text-[15px] font-semibold cursor-pointer">
+            className="w-full py-3.5 btn-gold rounded-xl text-[15px] cursor-pointer">
             Ajouter la charge
           </button>
         </div>

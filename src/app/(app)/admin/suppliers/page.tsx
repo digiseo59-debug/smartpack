@@ -40,8 +40,8 @@ export default function SuppliersPage() {
   }
 
   return (
-    <div className="px-4 lg:px-6 py-4">
-      <button onClick={() => router.back()} className="flex items-center gap-2 text-sm text-muted hover:text-foreground mb-4 transition-colors cursor-pointer">
+    <div className="px-4 lg:px-6 py-4 space-y-4">
+      <button onClick={() => router.back()} className="flex items-center gap-2 text-sm text-muted hover:text-foreground transition-colors cursor-pointer">
         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
         </svg>
@@ -49,7 +49,7 @@ export default function SuppliersPage() {
       </button>
 
       <button onClick={() => setModalOpen(true)}
-        className="w-full py-3 bg-orange text-white rounded-xl text-sm font-semibold mb-4 cursor-pointer">
+        className="w-full py-3.5 btn-gold rounded-xl text-sm font-bold cursor-pointer">
         + Ajouter un fournisseur
       </button>
 
@@ -58,19 +58,21 @@ export default function SuppliersPage() {
           <div className="w-9 h-9 border-[2.5px] border-border border-t-gold rounded-full animate-spin" />
         </div>
       ) : (
-        <div className="space-y-2">
+        <div className="space-y-2.5">
           {suppliers.map(s => (
-            <div key={s.id} className="card p-4 flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-orange text-white flex items-center justify-center text-sm font-semibold">
+            <div key={s.id} className="glass-card card-hover p-4 flex items-center gap-3 cursor-pointer">
+              <div className="w-11 h-11 rounded-xl gradient-gold flex items-center justify-center text-sm font-black text-[#1a1a1a] shrink-0 shadow-md shadow-gold/15">
                 {s.name.charAt(0).toUpperCase()}
               </div>
-              <div className="flex-1">
-                <div className="text-sm font-semibold text-foreground">{s.name}</div>
-                {s.location && <div className="text-xs text-muted">{s.location}</div>}
-                {s.phone && <div className="text-xs text-muted">{s.phone}</div>}
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-bold text-foreground truncate">{s.name}</p>
+                <div className="flex gap-2 mt-0.5">
+                  {s.location && <p className="text-xs text-muted">{s.location}</p>}
+                  {s.phone && <p className="text-xs text-muted">{s.phone}</p>}
+                </div>
               </div>
               {s.credit > 0 && (
-                <span className="text-xs font-semibold px-2 py-1 rounded-md bg-red-light text-red">
+                <span className="text-xs font-bold px-2.5 py-1 rounded-lg bg-red-light text-red shrink-0">
                   {formatDH(s.credit)}
                 </span>
               )}
@@ -94,7 +96,7 @@ export default function SuppliersPage() {
             <input value={form.location} onChange={(e) => setForm({ ...form, location: e.target.value })} placeholder="Ville" className="input-field" />
           </div>
           <button onClick={createSupplier}
-            className="w-full py-3.5 bg-orange text-white rounded-xl text-[15px] font-semibold cursor-pointer">
+            className="w-full py-3.5 btn-gold rounded-xl text-[15px] cursor-pointer">
             Creer le fournisseur
           </button>
         </div>

@@ -39,15 +39,15 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="px-4 lg:px-6 py-4">
-      <button onClick={() => router.back()} className="flex items-center gap-2 text-sm text-muted hover:text-foreground mb-4 transition-colors cursor-pointer">
+    <div className="px-4 lg:px-6 py-4 space-y-4">
+      <button onClick={() => router.back()} className="flex items-center gap-2 text-sm text-muted hover:text-foreground transition-colors cursor-pointer">
         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
         </svg>
         Retour
       </button>
 
-      <div className="card p-5 space-y-4">
+      <div className="glass-card p-5 space-y-4">
         <h3 className="text-[10px] font-bold text-gold uppercase tracking-widest">Informations entreprise</h3>
         <div>
           <label className="block text-xs font-semibold text-muted uppercase tracking-wider mb-2">Nom de l&apos;entreprise</label>

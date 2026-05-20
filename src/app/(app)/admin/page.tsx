@@ -24,26 +24,41 @@ export default function AdminPage() {
   if (!isAdmin) return null
 
   return (
-    <div className="px-4 lg:px-6 py-4">
-      <p className="text-[10px] font-bold text-muted uppercase tracking-widest mb-5">Panneau d&apos;administration</p>
+    <div className="px-4 lg:px-6 py-4 space-y-4">
+      <div className="hero-stat p-5">
+        <div className="relative z-10 flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl gradient-gold flex items-center justify-center shadow-lg shadow-gold/20">
+            <svg className="w-5 h-5 text-[#1a1a1a]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.11 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+          </div>
+          <div>
+            <h2 className="text-base font-black text-white">Administration</h2>
+            <p className="text-[11px] text-gold/50 font-medium">Panneau de configuration</p>
+          </div>
+        </div>
+      </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         {adminLinks.map(link => (
           <button
             key={link.href}
             onClick={() => router.push(link.href)}
-            className="card card-hover p-5 flex items-center gap-4 text-left cursor-pointer"
+            className="glass-card card-hover p-5 flex items-center gap-4 text-left cursor-pointer"
           >
-            <div className="w-11 h-11 rounded-xl gradient-dark text-gold flex items-center justify-center shrink-0">
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d={link.icon} />
-              </svg>
+            <div className="w-11 h-11 rounded-xl hero-stat flex items-center justify-center shrink-0">
+              <div className="relative z-10">
+                <svg className="w-5 h-5 text-gold" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d={link.icon} />
+                </svg>
+              </div>
             </div>
             <div className="flex-1">
               <p className="text-sm font-bold text-foreground">{link.label}</p>
               <p className="text-xs text-muted mt-0.5">{link.desc}</p>
             </div>
-            <svg className="w-4 h-4 text-muted/50 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg className="w-4 h-4 text-muted/30 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
           </button>

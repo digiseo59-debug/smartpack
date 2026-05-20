@@ -33,86 +33,100 @@ export function BottomNav({ role }: BottomNavProps) {
 
   return (
     <>
-      {/* Mobile bottom nav */}
-      <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-surface/95 glass flex justify-around py-1.5 pb-[max(8px,env(safe-area-inset-bottom))] z-[1000] border-t border-border">
-        {items.map((item) => {
-          const isActive = pathname.startsWith(item.href)
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-xl transition-all ${
-                isActive ? 'text-gold-dark' : 'text-muted'
-              }`}
-            >
-              <div className="relative">
-                {isActive && (
-                  <div className="absolute -inset-2 bg-gold-50 rounded-xl" />
-                )}
-                <svg className="w-[22px] h-[22px] relative" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={isActive ? 2.2 : 1.6}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d={item.icon} />
-                </svg>
-              </div>
-              <span className={`text-[10px] ${isActive ? 'font-bold text-gold-dark' : 'font-medium'}`}>
-                {item.label}
-              </span>
-            </Link>
-          )
-        })}
-      </nav>
-
-      {/* Desktop sidebar */}
-      <nav className="hidden lg:flex fixed left-0 top-16 bottom-0 w-[260px] bg-surface border-r border-border flex-col py-6 px-3 z-[999]">
-        <div className="space-y-1">
+      {/* Mobile bottom nav — frosted glass */}
+      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-[1000]">
+        <div className="absolute inset-0 bg-[#0c0c0c]/90 glass border-t border-[rgba(200,169,96,0.1)]" />
+        <div className="relative flex justify-around py-2 pb-[max(10px,env(safe-area-inset-bottom))]">
           {items.map((item) => {
             const isActive = pathname.startsWith(item.href)
             return (
               <Link
                 key={item.href}
                 href={item.href}
-                className={`flex items-center gap-3 px-4 py-3 rounded-xl text-[13px] font-semibold transition-all ${
-                  isActive
-                    ? 'gradient-dark text-white shadow-lg shadow-black/10'
-                    : 'text-muted hover:bg-primary-light hover:text-foreground'
+                className={`flex flex-col items-center gap-1 px-4 py-2 rounded-2xl transition-all ${
+                  isActive ? 'text-gold' : 'text-white/35'
                 }`}
               >
-                <svg className="w-[20px] h-[20px]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={isActive ? 2 : 1.6}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d={item.icon} />
-                </svg>
-                <span>{item.label}</span>
-                {isActive && <div className="ml-auto w-1.5 h-1.5 rounded-full bg-gold" />}
+                <div className="relative">
+                  {isActive && (
+                    <div className="absolute -inset-2.5 bg-gold/8 rounded-xl" />
+                  )}
+                  <svg className="w-[22px] h-[22px] relative" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={isActive ? 2.2 : 1.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d={item.icon} />
+                  </svg>
+                </div>
+                <span className={`text-[10px] ${isActive ? 'font-bold text-gold' : 'font-medium'}`}>
+                  {item.label}
+                </span>
               </Link>
             )
           })}
         </div>
+      </nav>
 
-        {role === 'admin' && (
-          <div className="mt-6 pt-6 border-t border-border">
-            <p className="px-4 text-[10px] font-bold text-muted/50 uppercase tracking-widest mb-3">Admin</p>
-            <Link
-              href="/admin"
-              className={`flex items-center gap-3 px-4 py-3 rounded-xl text-[13px] font-semibold transition-all ${
-                pathname.startsWith('/admin')
-                  ? 'gradient-dark text-white shadow-lg shadow-black/10'
-                  : 'text-muted hover:bg-primary-light hover:text-foreground'
-              }`}
-            >
-              <svg className="w-[20px] h-[20px]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.6}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-              </svg>
-              <span>Parametres</span>
-            </Link>
+      {/* Desktop sidebar — glass panel */}
+      <nav className="hidden lg:flex fixed left-0 top-[72px] bottom-0 w-[280px] z-[999] flex-col">
+        <div className="absolute inset-0 bg-surface/80 glass border-r border-border" />
+        <div className="relative flex-1 flex flex-col py-8 px-4">
+          <div className="space-y-1.5">
+            {items.map((item) => {
+              const isActive = pathname.startsWith(item.href)
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={`flex items-center gap-3.5 px-4 py-3.5 rounded-2xl text-[13px] font-semibold transition-all ${
+                    isActive
+                      ? 'hero-stat text-white shadow-lg'
+                      : 'text-muted hover:text-foreground hover:bg-gold/5'
+                  }`}
+                >
+                  <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${isActive ? 'bg-gold/15' : 'bg-transparent'}`}>
+                    <svg className={`w-[20px] h-[20px] ${isActive ? 'text-gold' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={isActive ? 2 : 1.5}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d={item.icon} />
+                    </svg>
+                  </div>
+                  <span className="relative z-10">{item.label}</span>
+                  {isActive && <div className="ml-auto w-2 h-2 rounded-full bg-gold shadow-lg shadow-gold/30" />}
+                </Link>
+              )
+            })}
           </div>
-        )}
 
-        <div className="mt-auto px-4 py-3">
-          <div className="bg-primary-light rounded-xl p-3.5 border border-border">
-            <div className="flex items-center gap-2 mb-1">
-              <div className="w-1.5 h-1.5 rounded-full bg-gold" />
-              <p className="text-[11px] font-bold text-foreground">SmartPack</p>
+          {role === 'admin' && (
+            <div className="mt-8 pt-6 border-t border-border">
+              <p className="px-4 text-[9px] font-bold text-muted/40 uppercase tracking-[0.2em] mb-3">Administration</p>
+              <Link
+                href="/admin"
+                className={`flex items-center gap-3.5 px-4 py-3.5 rounded-2xl text-[13px] font-semibold transition-all ${
+                  pathname.startsWith('/admin')
+                    ? 'hero-stat text-white shadow-lg'
+                    : 'text-muted hover:text-foreground hover:bg-gold/5'
+                }`}
+              >
+                <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${pathname.startsWith('/admin') ? 'bg-gold/15' : 'bg-transparent'}`}>
+                  <svg className={`w-[20px] h-[20px] ${pathname.startsWith('/admin') ? 'text-gold' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                </div>
+                <span>Parametres</span>
+              </Link>
             </div>
-            <p className="text-[10px] text-muted pl-3.5">Emballage Meknes</p>
+          )}
+
+          <div className="mt-auto px-3 py-4">
+            <div className="hero-stat p-4">
+              <div className="relative z-10 flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-xl gradient-gold flex items-center justify-center shadow-lg shadow-gold/20">
+                  <span className="text-[10px] font-black text-[#1a1a1a]">SP</span>
+                </div>
+                <div>
+                  <p className="text-[12px] font-bold text-white">SmartPack</p>
+                  <p className="text-[10px] text-gold/40">Emballage Meknes</p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </nav>

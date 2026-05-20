@@ -39,9 +39,16 @@ export default function CategoriesAdminPage() {
     loadCategories()
   }
 
+  const colorMap: Record<string, string> = {
+    'cat-orange': 'bg-orange',
+    'cat-brown': 'bg-[#8d6e63]',
+    'cat-green': 'bg-gold',
+    'cat-gray': 'bg-muted',
+  }
+
   return (
-    <div className="px-4 lg:px-6 py-4">
-      <button onClick={() => router.back()} className="flex items-center gap-2 text-sm text-muted hover:text-foreground mb-4 transition-colors cursor-pointer">
+    <div className="px-4 lg:px-6 py-4 space-y-4">
+      <button onClick={() => router.back()} className="flex items-center gap-2 text-sm text-muted hover:text-foreground transition-colors cursor-pointer">
         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
         </svg>
@@ -49,7 +56,7 @@ export default function CategoriesAdminPage() {
       </button>
 
       <button onClick={() => setModalOpen(true)}
-        className="w-full py-3 btn-gold rounded-xl text-sm font-semibold mb-4 cursor-pointer">
+        className="w-full py-3.5 btn-gold rounded-xl text-sm font-bold cursor-pointer">
         + Ajouter une categorie
       </button>
 
@@ -58,20 +65,16 @@ export default function CategoriesAdminPage() {
           <div className="w-9 h-9 border-[2.5px] border-border border-t-gold rounded-full animate-spin" />
         </div>
       ) : (
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
           {categories.map(cat => (
-            <div key={cat.id} className="card p-5 text-center">
-              <div className={`w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-2.5 text-white ${
-                cat.color === 'cat-orange' ? 'bg-orange' :
-                cat.color === 'cat-brown' ? 'bg-[#8d6e63]' :
-                cat.color === 'cat-green' ? 'bg-gold' : 'bg-muted'
-              }`}>
+            <div key={cat.id} className="glass-card card-hover p-5 text-center cursor-pointer">
+              <div className={`w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-3 text-white shadow-lg ${colorMap[cat.color] ?? 'bg-muted'}`}>
                 <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
                 </svg>
               </div>
-              <div className="text-sm font-semibold text-foreground">{cat.name}</div>
-              <div className="text-xs text-muted mt-0.5">{cat.slug}</div>
+              <p className="text-sm font-bold text-foreground">{cat.name}</p>
+              <p className="text-[10px] text-muted mt-0.5 font-medium">{cat.slug}</p>
             </div>
           ))}
         </div>
@@ -85,12 +88,10 @@ export default function CategoriesAdminPage() {
           </div>
           <div>
             <label className="block text-xs font-semibold text-muted uppercase tracking-wider mb-2">Couleur</label>
-            <div className="flex gap-2">
-              {['cat-orange', 'cat-green', 'cat-brown', 'cat-gray'].map(c => (
-                <button key={c} onClick={() => setForm({ ...form, color: c })}
-                  className={`w-10 h-10 rounded-full border-2 cursor-pointer ${form.color === c ? 'border-gold ring-2 ring-gold/20' : 'border-transparent'} ${
-                    c === 'cat-orange' ? 'bg-orange' : c === 'cat-green' ? 'bg-gold' : c === 'cat-brown' ? 'bg-[#8d6e63]' : 'bg-muted'
-                  }`} />
+            <div className="flex gap-3">
+              {Object.entries(colorMap).map(([key, cls]) => (
+                <button key={key} onClick={() => setForm({ ...form, color: key })}
+                  className={`w-11 h-11 rounded-xl cursor-pointer transition-all ${cls} ${form.color === key ? 'ring-2 ring-gold ring-offset-2 ring-offset-background scale-110' : 'opacity-60 hover:opacity-100'}`} />
               ))}
             </div>
           </div>

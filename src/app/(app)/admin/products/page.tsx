@@ -89,8 +89,8 @@ export default function ProductsAdminPage() {
   const filtered = products.filter(p => p.name.toLowerCase().includes(search.toLowerCase()))
 
   return (
-    <div className="px-4 lg:px-6 py-4">
-      <button onClick={() => router.back()} className="flex items-center gap-2 text-sm text-muted hover:text-foreground mb-4 transition-colors cursor-pointer">
+    <div className="px-4 lg:px-6 py-4 space-y-4">
+      <button onClick={() => router.back()} className="flex items-center gap-2 text-sm text-muted hover:text-foreground transition-colors cursor-pointer">
         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
         </svg>
@@ -104,22 +104,55 @@ export default function ProductsAdminPage() {
           <div className="w-9 h-9 border-[2.5px] border-border border-t-gold rounded-full animate-spin" />
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3 mt-4 pb-4">
-          {filtered.map(p => (
-            <div key={p.id} onClick={() => openEdit(p)}
-              className="card card-hover p-4 flex justify-between items-center cursor-pointer">
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-bold text-foreground truncate">{p.name}</p>
-                <p className="text-xs text-muted mt-0.5">
-                  {(p.category as unknown as { name: string })?.name} · {formatDH(p.price)}
-                </p>
+        <>
+          {/* Desktop table */}
+          <div className="hidden lg:block glass-card overflow-hidden">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b border-border">
+                  <th className="text-left px-5 py-3.5 text-[10px] font-bold text-muted uppercase tracking-widest">Produit</th>
+                  <th className="text-left px-5 py-3.5 text-[10px] font-bold text-muted uppercase tracking-widest">Categorie</th>
+                  <th className="text-right px-5 py-3.5 text-[10px] font-bold text-muted uppercase tracking-widest">Prix</th>
+                  <th className="text-right px-5 py-3.5 text-[10px] font-bold text-muted uppercase tracking-widest">Stock</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filtered.map(p => (
+                  <tr key={p.id} onClick={() => openEdit(p)} className="border-b border-border/50 hover:bg-gold/3 cursor-pointer transition-colors">
+                    <td className="px-5 py-3.5 text-sm font-bold text-foreground">{p.name}</td>
+                    <td className="px-5 py-3.5 text-xs text-muted font-medium">{(p.category as unknown as { name: string })?.name}</td>
+                    <td className="px-5 py-3.5 text-sm font-semibold text-foreground text-right">{formatDH(p.price)}</td>
+                    <td className="px-5 py-3.5 text-right">
+                      <span className={`text-lg font-black stat-number ${p.stock > p.low_stock_threshold ? 'text-foreground' : p.stock > 0 ? 'text-orange' : 'text-red'}`}>
+                        {p.stock}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Mobile cards */}
+          <div className="lg:hidden grid grid-cols-1 md:grid-cols-2 gap-2.5">
+            {filtered.map(p => (
+              <div key={p.id} onClick={() => openEdit(p)}
+                className="glass-card card-hover p-4 flex justify-between items-center cursor-pointer">
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-bold text-foreground truncate">{p.name}</p>
+                  <p className="text-xs text-muted mt-0.5">
+                    {(p.category as unknown as { name: string })?.name}
+                    <span className="mx-1.5 text-border">·</span>
+                    {formatDH(p.price)}
+                  </p>
+                </div>
+                <div className={`text-xl font-black ml-3 stat-number ${p.stock > p.low_stock_threshold ? 'text-foreground' : p.stock > 0 ? 'text-orange' : 'text-red'}`}>
+                  {p.stock}
+                </div>
               </div>
-              <div className={`text-xl font-bold ml-3 ${p.stock > p.low_stock_threshold ? 'text-foreground' : p.stock > 0 ? 'text-orange' : 'text-red'}`}>
-                {p.stock}
-              </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        </>
       )}
 
       <FabButton onClick={openNew} />
@@ -142,14 +175,14 @@ export default function ProductsAdminPage() {
               <button
                 type="button"
                 onClick={() => setForm({ ...form, stock_type: 'normal' })}
-                className={`py-2.5 rounded-xl text-sm font-semibold transition-all cursor-pointer ${form.stock_type === 'normal' ? 'gradient-dark text-white' : 'bg-primary-light text-muted'}`}
+                className={`py-2.5 rounded-xl text-sm font-semibold transition-all cursor-pointer ${form.stock_type === 'normal' ? 'hero-stat text-white' : 'bg-surface border border-border text-muted'}`}
               >
                 Normal
               </button>
               <button
                 type="button"
                 onClick={() => setForm({ ...form, stock_type: 'serigraphie' })}
-                className={`py-2.5 rounded-xl text-sm font-semibold transition-all cursor-pointer ${form.stock_type === 'serigraphie' ? 'gradient-dark text-white' : 'bg-primary-light text-muted'}`}
+                className={`py-2.5 rounded-xl text-sm font-semibold transition-all cursor-pointer ${form.stock_type === 'serigraphie' ? 'hero-stat text-white' : 'bg-surface border border-border text-muted'}`}
               >
                 Serigraphie
               </button>
@@ -175,7 +208,7 @@ export default function ProductsAdminPage() {
           </div>
           <div className="flex gap-2 pt-2">
             {editProduct && (
-              <button onClick={deleteProduct} className="px-4 py-3.5 bg-red-light text-red rounded-xl text-sm font-semibold cursor-pointer hover:bg-red/10 transition-colors">
+              <button onClick={deleteProduct} className="px-4 py-3.5 bg-red-light text-red rounded-xl text-sm font-bold cursor-pointer hover:bg-red/15 transition-colors">
                 Supprimer
               </button>
             )}

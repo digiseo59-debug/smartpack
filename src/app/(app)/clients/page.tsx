@@ -55,51 +55,119 @@ export default function ClientsPage() {
   const debtorCount = filtered.filter(c => c.credit > 0).length
 
   return (
-    <>
-      <div className="px-4 lg:px-6 py-4">
-        <SearchBox placeholder="Rechercher un client..." value={search} onChange={setSearch} />
-      </div>
-
+    <div className="px-4 lg:px-6 py-4 space-y-4">
+      {/* ── Hero Stats ── */}
       {!loading && filtered.length > 0 && (
-        <div className="grid grid-cols-2 gap-3 px-4 lg:px-6 mb-4">
-          <div className="card p-4">
-            <p className="text-[10px] font-bold text-muted uppercase tracking-widest">{filtered.length} clients</p>
-            <p className="text-lg font-bold text-foreground mt-1">{debtorCount} debiteurs</p>
+        <div className="grid grid-cols-3 gap-3">
+          <div className="hero-stat p-4">
+            <div className="relative z-10">
+              <div className="w-8 h-8 rounded-xl bg-gold/10 flex items-center justify-center mb-2">
+                <svg className="w-4 h-4 text-gold" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+              </div>
+              <p className="text-[10px] font-bold text-white/40 uppercase tracking-widest">Total</p>
+              <p className="text-2xl font-black text-white mt-1 stat-number">{filtered.length}</p>
+            </div>
           </div>
-          <div className="card p-4">
-            <p className="text-[10px] font-bold text-muted uppercase tracking-widest">Total creances</p>
-            <p className="text-lg font-bold text-red mt-1">{formatDH(totalCredit)}</p>
+
+          <div className="hero-stat p-4">
+            <div className="relative z-10">
+              <div className="w-8 h-8 rounded-xl bg-red/10 flex items-center justify-center mb-2">
+                <svg className="w-4 h-4 text-red" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <p className="text-[10px] font-bold text-white/40 uppercase tracking-widest">Debiteurs</p>
+              <p className="text-2xl font-black text-red mt-1 stat-number">{debtorCount}</p>
+            </div>
+          </div>
+
+          <div className="hero-stat p-4">
+            <div className="relative z-10">
+              <div className="w-8 h-8 rounded-xl bg-red/10 flex items-center justify-center mb-2">
+                <svg className="w-4 h-4 text-red" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8V7m0 1v8m0 0v1" />
+                </svg>
+              </div>
+              <p className="text-[10px] font-bold text-white/40 uppercase tracking-widest">Creances</p>
+              <p className="text-lg font-black text-red mt-1 stat-number">{formatDH(totalCredit)}</p>
+            </div>
           </div>
         </div>
       )}
 
+      {/* ── Search ── */}
+      <SearchBox placeholder="Rechercher un client..." value={search} onChange={setSearch} />
+
+      {/* ── Clients List ── */}
       {loading ? (
         <div className="flex justify-center py-16">
           <div className="w-9 h-9 border-[2.5px] border-border border-t-gold rounded-full animate-spin" />
         </div>
       ) : (
-        <div className="px-4 lg:px-6 pb-4 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
-          {filtered.map(c => (
-            <div key={c.id} className="card card-hover p-4 flex items-center gap-3 cursor-pointer">
-              <div className="w-11 h-11 rounded-xl gradient-dark text-gold flex items-center justify-center text-base font-bold shrink-0">
-                {c.name.charAt(0).toUpperCase()}
+        <>
+          {/* Desktop table */}
+          <div className="hidden lg:block glass-card overflow-hidden">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b border-border">
+                  <th className="text-left px-5 py-3.5 text-[10px] font-bold text-muted uppercase tracking-widest">Client</th>
+                  <th className="text-left px-5 py-3.5 text-[10px] font-bold text-muted uppercase tracking-widest">Ville</th>
+                  <th className="text-left px-5 py-3.5 text-[10px] font-bold text-muted uppercase tracking-widest">Telephone</th>
+                  <th className="text-right px-5 py-3.5 text-[10px] font-bold text-muted uppercase tracking-widest">Solde</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filtered.map(c => (
+                  <tr key={c.id} className="border-b border-border/50 hover:bg-gold/3 transition-colors">
+                    <td className="px-5 py-3.5">
+                      <div className="flex items-center gap-3">
+                        <div className="w-9 h-9 rounded-xl gradient-gold flex items-center justify-center text-xs font-black text-[#1a1a1a] shrink-0 shadow-md shadow-gold/15">
+                          {c.name.charAt(0).toUpperCase()}
+                        </div>
+                        <span className="text-sm font-bold text-foreground">{c.name}</span>
+                      </div>
+                    </td>
+                    <td className="px-5 py-3.5 text-xs text-muted font-medium">{c.location || '—'}</td>
+                    <td className="px-5 py-3.5 text-xs text-muted font-medium">{c.phone || '—'}</td>
+                    <td className="px-5 py-3.5 text-right">
+                      {c.credit > 0 ? (
+                        <span className="inline-block px-3 py-1 rounded-lg text-xs font-bold bg-red-light text-red">{formatDH(c.credit)}</span>
+                      ) : (
+                        <span className="inline-block px-3 py-1 rounded-lg text-xs font-bold bg-gold/8 text-gold-dark">Solde</span>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Mobile cards */}
+          <div className="lg:hidden grid grid-cols-1 gap-2.5">
+            {filtered.map(c => (
+              <div key={c.id} className="glass-card card-hover p-4 flex items-center gap-3 cursor-pointer">
+                <div className="w-11 h-11 rounded-xl gradient-gold flex items-center justify-center text-base font-black text-[#1a1a1a] shrink-0 shadow-md shadow-gold/15">
+                  {c.name.charAt(0).toUpperCase()}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-bold text-foreground truncate">{c.name}</p>
+                  {c.location && <p className="text-xs text-muted truncate mt-0.5">{c.location}</p>}
+                </div>
+                {c.credit > 0 ? (
+                  <span className="text-xs font-bold px-2.5 py-1 rounded-lg bg-red-light text-red shrink-0">
+                    {formatDH(c.credit)}
+                  </span>
+                ) : (
+                  <span className="text-xs font-bold px-2.5 py-1 rounded-lg bg-gold/8 text-gold-dark shrink-0">
+                    Solde
+                  </span>
+                )}
               </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-bold text-foreground truncate">{c.name}</p>
-                {c.location && <p className="text-xs text-muted truncate">{c.location}</p>}
-              </div>
-              {c.credit > 0 ? (
-                <span className="text-xs font-bold px-2.5 py-1 rounded-lg bg-red-light text-red shrink-0">
-                  {formatDH(c.credit)}
-                </span>
-              ) : (
-                <span className="text-xs font-bold px-2.5 py-1 rounded-lg bg-gold-50 text-gold-dark shrink-0">
-                  Solde
-                </span>
-              )}
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        </>
       )}
 
       <FabButton onClick={() => setNewClientModal(true)} />
@@ -123,6 +191,6 @@ export default function ClientsPage() {
           </button>
         </div>
       </ModalSheet>
-    </>
+    </div>
   )
 }
