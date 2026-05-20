@@ -1,0 +1,59 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-primary: #2d7a3e;
+  --color-primary-light: #e8f5e9;
+  --color-primary-dark: #1b5e2e;
+  --color-orange: #e67e22;
+  --color-orange-light: #fff3e0;
+  --color-blue: #1976d2;
+  --color-blue-light: #e3f2fd;
+  --color-red: #c62828;
+  --color-red-light: #ffebee;
+  --color-purple: #8e44ad;
+  --color-purple-light: #f3e5f5;
+  --color-background: #f5f5f5;
+  --color-foreground: #333333;
+  --color-surface: #ffffff;
+  --color-muted: #888888;
+  --color-border: #e0e0e0;
+  --font-sans: 'Inter', sans-serif;
+}
+
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  background: var(--color-background);
+  color: var(--color-foreground);
+  font-family: var(--font-sans);
+  overflow-x: hidden;
+}
+
+::-webkit-scrollbar { width: 0; height: 0; }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.animate-fade-in { animation: fadeIn 0.2s ease; }
+.animate-slide-up { animation: slideUp 0.25s ease; }
+.animate-spin { animation: spin 0.8s linear infinite; }
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] { -moz-appearance: textfield; }
