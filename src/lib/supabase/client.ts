@@ -13,8 +13,6 @@ export function createClient() {
 
   if (_client) return _client
 
-  const nativeFetch = window.fetch.bind(window)
-
   _client = supabaseCreateClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -22,11 +20,11 @@ export function createClient() {
       auth: {
         flowType: 'implicit',
         persistSession: true,
-        autoRefreshToken: true,
-        detectSessionInUrl: true,
+        autoRefreshToken: false,
+        detectSessionInUrl: false,
       },
       global: {
-        fetch: nativeFetch,
+        fetch: (...args: Parameters<typeof fetch>) => window.fetch(...args),
       },
     }
   )
