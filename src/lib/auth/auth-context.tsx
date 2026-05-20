@@ -1,7 +1,6 @@
 'use client'
 
 import { createContext, useContext, useEffect, useState } from 'react'
-import { createClient } from '@/lib/supabase/client'
 import type { Profile, UserRole } from '@/types/database'
 import type { User } from '@supabase/supabase-js'
 
@@ -27,58 +26,53 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const supabase = createClient()
     let mounted = true
-
-    // Force loading off after 3s no matter what
-    const failSafe = setTimeout(() => {
-      if (mounted) setLoading(false)
-    }, 3000)
 
     async function init() {
       try {
-        const { data: { session } } = await supabase.auth.getSession()
-        if (!mounted) return
+        const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
+        const ref = new URL(supabaseUrl).hostname.split('.')[0]
+        const storageKey = `sb-${ref}-auth-token`
+        const raw = localStorage.getItem(storageKey)
 
-        if (session?.user) {
-          setUser(session.user)
-          const { data } = await supabase
-            .from('profiles')
-            .select('*')
-            .eq('id', session.user.id)
-            .maybeSingle()
-          if (mounted) setProfile(data as Profile | null)
+        if (!raw) {
+          if (mounted) setLoading(false)
+          return
+        }
+
+        const session = JSON.parse(raw)
+        if (!session?.access_token || !session?.user) {
+          if (mounted) setLoading(false)
+          return
+        }
+
+        if (mounted) setUser(session.user)
+
+        const baseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
+        const apiKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+        const profileRes = await window.fetch(
+          `${baseUrl}/rest/v1/profiles?id=eq.${session.user.id}&select=*`,
+          {
+            headers: {
+              'apikey': apiKey,
+              'Authorization': `Bearer ${session.access_token}`,
+            },
+          }
+        )
+        const profiles = await profileRes.json()
+        if (mounted && profiles?.length > 0) {
+          setProfile(profiles[0] as Profile)
         }
       } catch (e) {
         console.error('Auth init error:', e)
       } finally {
-        clearTimeout(failSafe)
         if (mounted) setLoading(false)
       }
     }
 
     init()
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
-      if (!mounted) return
-      setUser(session?.user ?? null)
-      if (session?.user) {
-        const { data } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', session.user.id)
-          .maybeSingle()
-        if (mounted) setProfile(data as Profile | null)
-      } else {
-        setProfile(null)
-      }
-    })
-
-    return () => {
-      mounted = false
-      clearTimeout(failSafe)
-      subscription.unsubscribe()
-    }
+    return () => { mounted = false }
   }, [])
 
   const role = (profile?.role ?? 'salarie') as UserRole
