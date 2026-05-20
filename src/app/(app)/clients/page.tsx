@@ -13,10 +13,9 @@ export default function ClientsPage() {
   const [clients, setClients] = useState<Client[]>([])
   const [search, setSearch] = useState('')
   const [loading, setLoading] = useState(true)
-  const [newClientModal, setNewClientModal] = useState(false)
-  const [newName, setNewName] = useState('')
-  const [newLocation, setNewLocation] = useState('')
-  const [newPhone, setNewPhone] = useState('')
+  const [modalOpen, setModalOpen] = useState(false)
+  const [editClient, setEditClient] = useState<Client | null>(null)
+  const [form, setForm] = useState({ name: '', location: '', phone: '', notes: '' })
   const supabase = createClient()
 
   useEffect(() => { loadClients() }, [])
@@ -27,23 +26,53 @@ export default function ClientsPage() {
     setLoading(false)
   }
 
-  async function createNewClient() {
-    if (!newName.trim()) { toast.error('Nom requis'); return }
+  function openNew() {
+    setEditClient(null)
+    setForm({ name: '', location: '', phone: '', notes: '' })
+    setModalOpen(true)
+  }
 
-    const { error } = await supabase.from('clients').insert({
-      name: newName.trim(),
-      location: newLocation.trim(),
-      phone: newPhone.trim(),
-      created_by: (await supabase.auth.getUser()).data.user?.id,
-    })
+  function openEdit(c: Client) {
+    setEditClient(c)
+    setForm({ name: c.name, location: c.location || '', phone: c.phone || '', notes: c.notes || '' })
+    setModalOpen(true)
+  }
 
-    if (error) { toast.error('Erreur: ' + (error?.message || JSON.stringify(error))); return }
+  async function saveClient() {
+    if (!form.name.trim()) { toast.error('Nom requis'); return }
 
-    toast.success('Client cree')
-    setNewClientModal(false)
-    setNewName('')
-    setNewLocation('')
-    setNewPhone('')
+    if (editClient) {
+      const { error } = await supabase.from('clients').update({
+        name: form.name.trim(),
+        location: form.location.trim(),
+        phone: form.phone.trim(),
+        notes: form.notes.trim(),
+      }).eq('id', editClient.id)
+      if (error) { toast.error(error.message); return }
+      toast.success('Client modifie')
+    } else {
+      const { error } = await supabase.from('clients').insert({
+        name: form.name.trim(),
+        location: form.location.trim(),
+        phone: form.phone.trim(),
+        notes: form.notes.trim(),
+        created_by: (await supabase.auth.getUser()).data.user?.id,
+      })
+      if (error) { toast.error(error.message); return }
+      toast.success('Client cree')
+    }
+
+    setModalOpen(false)
+    loadClients()
+  }
+
+  async function deleteClient() {
+    if (!editClient) return
+    if (!confirm(`Supprimer "${editClient.name}" ?`)) return
+    const { error } = await supabase.from('clients').delete().eq('id', editClient.id)
+    if (error) { toast.error(error.message); return }
+    toast.success('Client supprime')
+    setModalOpen(false)
     loadClients()
   }
 
@@ -56,7 +85,6 @@ export default function ClientsPage() {
 
   return (
     <div className="px-4 lg:px-6 py-4 space-y-4">
-      {/* ── Hero Stats ── */}
       {!loading && filtered.length > 0 && (
         <div className="grid grid-cols-3 gap-3">
           <div className="hero-stat p-4">
@@ -70,7 +98,6 @@ export default function ClientsPage() {
               <p className="text-2xl font-black text-white mt-1 stat-number">{filtered.length}</p>
             </div>
           </div>
-
           <div className="hero-stat p-4">
             <div className="relative z-10">
               <div className="w-8 h-8 rounded-xl bg-red/10 flex items-center justify-center mb-2">
@@ -82,7 +109,6 @@ export default function ClientsPage() {
               <p className="text-2xl font-black text-red mt-1 stat-number">{debtorCount}</p>
             </div>
           </div>
-
           <div className="hero-stat p-4">
             <div className="relative z-10">
               <div className="w-8 h-8 rounded-xl bg-red/10 flex items-center justify-center mb-2">
@@ -97,17 +123,14 @@ export default function ClientsPage() {
         </div>
       )}
 
-      {/* ── Search ── */}
       <SearchBox placeholder="Rechercher un client..." value={search} onChange={setSearch} />
 
-      {/* ── Clients List ── */}
       {loading ? (
         <div className="flex justify-center py-16">
           <div className="w-9 h-9 border-[2.5px] border-border border-t-gold rounded-full animate-spin" />
         </div>
       ) : (
         <>
-          {/* Desktop table */}
           <div className="hidden lg:block glass-card overflow-hidden">
             <table className="w-full">
               <thead>
@@ -120,7 +143,7 @@ export default function ClientsPage() {
               </thead>
               <tbody>
                 {filtered.map(c => (
-                  <tr key={c.id} className="border-b border-border/50 hover:bg-gold/3 transition-colors">
+                  <tr key={c.id} onClick={() => openEdit(c)} className="border-b border-border/50 hover:bg-gold/3 cursor-pointer transition-colors">
                     <td className="px-5 py-3.5">
                       <div className="flex items-center gap-3">
                         <div className="w-9 h-9 rounded-xl gradient-gold flex items-center justify-center text-xs font-black text-[#1a1a1a] shrink-0 shadow-md shadow-gold/15">
@@ -144,10 +167,9 @@ export default function ClientsPage() {
             </table>
           </div>
 
-          {/* Mobile cards */}
           <div className="lg:hidden grid grid-cols-1 gap-2.5">
             {filtered.map(c => (
-              <div key={c.id} className="glass-card card-hover p-4 flex items-center gap-3 cursor-pointer">
+              <div key={c.id} onClick={() => openEdit(c)} className="glass-card card-hover p-4 flex items-center gap-3 cursor-pointer">
                 <div className="w-11 h-11 rounded-xl gradient-gold flex items-center justify-center text-base font-black text-[#1a1a1a] shrink-0 shadow-md shadow-gold/15">
                   {c.name.charAt(0).toUpperCase()}
                 </div>
@@ -156,13 +178,9 @@ export default function ClientsPage() {
                   {c.location && <p className="text-xs text-muted truncate mt-0.5">{c.location}</p>}
                 </div>
                 {c.credit > 0 ? (
-                  <span className="text-xs font-bold px-2.5 py-1 rounded-lg bg-red-light text-red shrink-0">
-                    {formatDH(c.credit)}
-                  </span>
+                  <span className="text-xs font-bold px-2.5 py-1 rounded-lg bg-red-light text-red shrink-0">{formatDH(c.credit)}</span>
                 ) : (
-                  <span className="text-xs font-bold px-2.5 py-1 rounded-lg bg-gold/8 text-gold-dark shrink-0">
-                    Solde
-                  </span>
+                  <span className="text-xs font-bold px-2.5 py-1 rounded-lg bg-gold/8 text-gold-dark shrink-0">Solde</span>
                 )}
               </div>
             ))}
@@ -170,25 +188,42 @@ export default function ClientsPage() {
         </>
       )}
 
-      <FabButton onClick={() => setNewClientModal(true)} />
+      <FabButton onClick={openNew} />
 
-      <ModalSheet open={newClientModal} onClose={() => setNewClientModal(false)} title="Nouveau client">
+      <ModalSheet open={modalOpen} onClose={() => setModalOpen(false)} title={editClient ? 'Modifier client' : 'Nouveau client'}>
         <div className="space-y-4">
           <div>
             <label className="block text-xs font-semibold text-muted uppercase tracking-wider mb-2">Nom *</label>
-            <input value={newName} onChange={(e) => setNewName(e.target.value)} placeholder="Nom du client" className="input-field" />
+            <input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Nom du client" className="input-field" />
           </div>
           <div>
             <label className="block text-xs font-semibold text-muted uppercase tracking-wider mb-2">Ville</label>
-            <input value={newLocation} onChange={(e) => setNewLocation(e.target.value)} placeholder="Ville / Emplacement" className="input-field" />
+            <input value={form.location} onChange={(e) => setForm({ ...form, location: e.target.value })} placeholder="Ville / Emplacement" className="input-field" />
           </div>
           <div>
             <label className="block text-xs font-semibold text-muted uppercase tracking-wider mb-2">Telephone</label>
-            <input value={newPhone} onChange={(e) => setNewPhone(e.target.value)} placeholder="06XXXXXXXX" className="input-field" />
+            <input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder="06XXXXXXXX" className="input-field" />
           </div>
-          <button onClick={createNewClient} className="w-full py-3.5 btn-gold text-[15px] rounded-xl cursor-pointer">
-            Creer le client
-          </button>
+          <div>
+            <label className="block text-xs font-semibold text-muted uppercase tracking-wider mb-2">Notes</label>
+            <input value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} placeholder="Notes internes" className="input-field" />
+          </div>
+          {editClient && editClient.credit > 0 && (
+            <div className="p-3 rounded-xl bg-red-light border border-red/20">
+              <p className="text-[10px] font-bold text-red uppercase tracking-widest">Credit en cours</p>
+              <p className="text-lg font-black text-red mt-0.5">{formatDH(editClient.credit)}</p>
+            </div>
+          )}
+          <div className="flex gap-2 pt-2">
+            {editClient && (
+              <button onClick={deleteClient} className="px-4 py-3.5 bg-red-light text-red rounded-xl text-sm font-bold cursor-pointer hover:bg-red/15 transition-colors">
+                Supprimer
+              </button>
+            )}
+            <button onClick={saveClient} className="flex-1 py-3.5 btn-gold rounded-xl text-[15px] cursor-pointer">
+              {editClient ? 'Enregistrer' : 'Creer le client'}
+            </button>
+          </div>
         </div>
       </ModalSheet>
     </div>

@@ -13,6 +13,7 @@ export default function ExpensesPage() {
   const [expenses, setExpenses] = useState<Expense[]>([])
   const [loading, setLoading] = useState(true)
   const [modalOpen, setModalOpen] = useState(false)
+  const [editExpense, setEditExpense] = useState<Expense | null>(null)
   const [form, setForm] = useState({ description: '', amount: 0, category: 'general' })
   const { isAdmin } = useAuth()
   const router = useRouter()
@@ -29,16 +30,45 @@ export default function ExpensesPage() {
     setLoading(false)
   }
 
-  async function createExpense() {
-    if (!form.description.trim() || !form.amount) { toast.error('Description et montant requis'); return }
-    const { error } = await supabase.from('expenses').insert({
-      ...form,
-      created_by: (await supabase.auth.getUser()).data.user?.id,
-    })
-    if (error) { toast.error(error.message); return }
-    toast.success('Charge ajoutee')
-    setModalOpen(false)
+  function openNew() {
+    setEditExpense(null)
     setForm({ description: '', amount: 0, category: 'general' })
+    setModalOpen(true)
+  }
+
+  function openEdit(e: Expense) {
+    setEditExpense(e)
+    setForm({ description: e.description, amount: e.amount, category: e.category })
+    setModalOpen(true)
+  }
+
+  async function saveExpense() {
+    if (!form.description.trim() || !form.amount) { toast.error('Description et montant requis'); return }
+
+    if (editExpense) {
+      const { error } = await supabase.from('expenses').update(form).eq('id', editExpense.id)
+      if (error) { toast.error(error.message); return }
+      toast.success('Charge modifiee')
+    } else {
+      const { error } = await supabase.from('expenses').insert({
+        ...form,
+        created_by: (await supabase.auth.getUser()).data.user?.id,
+      })
+      if (error) { toast.error(error.message); return }
+      toast.success('Charge ajoutee')
+    }
+
+    setModalOpen(false)
+    loadExpenses()
+  }
+
+  async function deleteExpense() {
+    if (!editExpense) return
+    if (!confirm(`Supprimer "${editExpense.description}" ?`)) return
+    const { error } = await supabase.from('expenses').delete().eq('id', editExpense.id)
+    if (error) { toast.error(error.message); return }
+    toast.success('Charge supprimee')
+    setModalOpen(false)
     loadExpenses()
   }
 
@@ -53,7 +83,6 @@ export default function ExpensesPage() {
         Retour
       </button>
 
-      {/* Total hero */}
       <div className="hero-stat p-5">
         <div className="relative z-10 flex items-center justify-between">
           <div>
@@ -68,8 +97,7 @@ export default function ExpensesPage() {
         </div>
       </div>
 
-      <button onClick={() => setModalOpen(true)}
-        className="w-full py-3.5 btn-gold rounded-xl text-sm font-bold cursor-pointer">
+      <button onClick={openNew} className="w-full py-3.5 btn-gold rounded-xl text-sm font-bold cursor-pointer">
         + Ajouter une charge
       </button>
 
@@ -79,7 +107,6 @@ export default function ExpensesPage() {
         </div>
       ) : (
         <>
-          {/* Desktop table */}
           <div className="hidden lg:block glass-card overflow-hidden">
             <table className="w-full">
               <thead>
@@ -92,7 +119,7 @@ export default function ExpensesPage() {
               </thead>
               <tbody>
                 {expenses.map(e => (
-                  <tr key={e.id} className="border-b border-border/50 hover:bg-gold/3 transition-colors">
+                  <tr key={e.id} onClick={() => openEdit(e)} className="border-b border-border/50 hover:bg-gold/3 cursor-pointer transition-colors">
                     <td className="px-5 py-3.5 text-xs text-muted font-medium">{formatDate(e.date)}</td>
                     <td className="px-5 py-3.5 text-sm font-bold text-foreground">{e.description}</td>
                     <td className="px-5 py-3.5">
@@ -105,10 +132,9 @@ export default function ExpensesPage() {
             </table>
           </div>
 
-          {/* Mobile cards */}
           <div className="lg:hidden space-y-2.5">
             {expenses.map(e => (
-              <div key={e.id} className="glass-card p-4 flex justify-between items-center">
+              <div key={e.id} onClick={() => openEdit(e)} className="glass-card card-hover p-4 flex justify-between items-center cursor-pointer">
                 <div className="min-w-0 flex-1">
                   <p className="text-sm font-bold text-foreground truncate">{e.description}</p>
                   <p className="text-xs text-muted mt-0.5">
@@ -124,7 +150,7 @@ export default function ExpensesPage() {
         </>
       )}
 
-      <ModalSheet open={modalOpen} onClose={() => setModalOpen(false)} title="Nouvelle charge">
+      <ModalSheet open={modalOpen} onClose={() => setModalOpen(false)} title={editExpense ? 'Modifier charge' : 'Nouvelle charge'}>
         <div className="space-y-4">
           <div>
             <label className="block text-xs font-semibold text-muted uppercase tracking-wider mb-2">Description *</label>
@@ -146,10 +172,16 @@ export default function ExpensesPage() {
               <option value="autre">Autre</option>
             </select>
           </div>
-          <button onClick={createExpense}
-            className="w-full py-3.5 btn-gold rounded-xl text-[15px] cursor-pointer">
-            Ajouter la charge
-          </button>
+          <div className="flex gap-2 pt-2">
+            {editExpense && (
+              <button onClick={deleteExpense} className="px-4 py-3.5 bg-red-light text-red rounded-xl text-sm font-bold cursor-pointer hover:bg-red/15 transition-colors">
+                Supprimer
+              </button>
+            )}
+            <button onClick={saveExpense} className="flex-1 py-3.5 btn-gold rounded-xl text-[15px] cursor-pointer">
+              {editExpense ? 'Enregistrer' : 'Ajouter la charge'}
+            </button>
+          </div>
         </div>
       </ModalSheet>
     </div>

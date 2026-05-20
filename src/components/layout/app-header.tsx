@@ -25,7 +25,7 @@ export function AppHeader({ title }: AppHeaderProps) {
   return (
     <header className="fixed top-0 left-0 right-0 z-[1000] h-[72px]">
       <div className="absolute inset-0 bg-[#0c0c0c]/95 glass border-b border-[rgba(200,169,96,0.1)]" />
-      <div className="relative max-w-7xl mx-auto h-full px-5 lg:px-8 flex justify-between items-center">
+      <div className="relative h-full px-5 lg:px-8 flex justify-between items-center">
         <div className="flex items-center gap-3.5">
           <div className="w-10 h-10 rounded-2xl overflow-hidden ring-1.5 ring-gold/20 shadow-lg shadow-gold/10">
             <img src="/logo.jpg" alt="SmartPack" className="w-full h-full object-cover" />

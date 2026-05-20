@@ -12,6 +12,7 @@ export default function UsersPage() {
   const [users, setUsers] = useState<Profile[]>([])
   const [loading, setLoading] = useState(true)
   const [modalOpen, setModalOpen] = useState(false)
+  const [editUser, setEditUser] = useState<Profile | null>(null)
   const [newEmail, setNewEmail] = useState('')
   const [newName, setNewName] = useState('')
   const [newRole, setNewRole] = useState<'admin' | 'salarie'>('salarie')
@@ -31,6 +32,24 @@ export default function UsersPage() {
     setLoading(false)
   }
 
+  function openNew() {
+    setEditUser(null)
+    setNewEmail('')
+    setNewName('')
+    setNewRole('salarie')
+    setNewPassword('')
+    setModalOpen(true)
+  }
+
+  function openEdit(u: Profile) {
+    setEditUser(u)
+    setNewName(u.full_name)
+    setNewRole(u.role)
+    setNewEmail('')
+    setNewPassword('')
+    setModalOpen(true)
+  }
+
   async function createUser() {
     if (!newEmail || !newName || !newPassword) {
       toast.error('Remplissez tous les champs')
@@ -46,14 +65,27 @@ export default function UsersPage() {
     if (res.ok) {
       toast.success('Utilisateur cree')
       setModalOpen(false)
-      setNewEmail('')
-      setNewName('')
-      setNewPassword('')
       loadUsers()
     } else {
       const data = await res.json()
       toast.error(data.error ?? 'Erreur')
     }
+  }
+
+  async function updateUser() {
+    if (!editUser || !newName) return
+    const { error } = await supabase.from('profiles').update({ full_name: newName, role: newRole }).eq('id', editUser.id)
+    if (error) { toast.error(error.message); return }
+    toast.success('Utilisateur modifie')
+    setModalOpen(false)
+    loadUsers()
+  }
+
+  async function toggleActive(u: Profile) {
+    const { error } = await supabase.from('profiles').update({ is_active: !u.is_active }).eq('id', u.id)
+    if (error) { toast.error(error.message); return }
+    toast.success(u.is_active ? 'Desactive' : 'Active')
+    loadUsers()
   }
 
   const activeCount = users.filter(u => u.is_active).length
@@ -68,7 +100,6 @@ export default function UsersPage() {
         Retour
       </button>
 
-      {/* Stats */}
       <div className="grid grid-cols-3 gap-3">
         <div className="hero-stat p-4">
           <div className="relative z-10">
@@ -90,10 +121,8 @@ export default function UsersPage() {
         </div>
       </div>
 
-      <button
-        onClick={() => setModalOpen(true)}
-        className="w-full py-3.5 btn-gold rounded-xl text-sm font-bold flex items-center justify-center gap-2 cursor-pointer"
-      >
+      <button onClick={openNew}
+        className="w-full py-3.5 btn-gold rounded-xl text-sm font-bold flex items-center justify-center gap-2 cursor-pointer">
         + Ajouter un utilisateur
       </button>
 
@@ -104,38 +133,47 @@ export default function UsersPage() {
       ) : (
         <div className="space-y-2.5">
           {users.map(u => (
-            <div key={u.id} className="glass-card card-hover p-4 flex items-center gap-3 cursor-pointer">
+            <div key={u.id} className="glass-card p-4 flex items-center gap-3">
               <div className={`w-11 h-11 rounded-xl flex items-center justify-center text-sm font-black shrink-0 shadow-md ${
                 u.role === 'admin' ? 'bg-purple text-white shadow-purple/20' : 'gradient-gold text-[#1a1a1a] shadow-gold/20'
               }`}>
                 {u.full_name.charAt(0).toUpperCase()}
               </div>
-              <div className="flex-1 min-w-0">
+              <div className="flex-1 min-w-0 cursor-pointer" onClick={() => openEdit(u)}>
                 <p className="text-sm font-bold text-foreground truncate">{u.full_name}</p>
                 <p className="text-xs text-muted mt-0.5">{u.role === 'admin' ? 'Administrateur' : 'Salarie'}</p>
               </div>
-              <span className={`text-[10px] font-bold px-2.5 py-1 rounded-lg ${u.is_active ? 'bg-gold/8 text-gold-dark' : 'bg-red-light text-red'}`}>
+              <button
+                onClick={() => toggleActive(u)}
+                className={`text-[10px] font-bold px-3 py-1.5 rounded-lg cursor-pointer transition-colors ${
+                  u.is_active ? 'bg-gold/8 text-gold-dark hover:bg-red-light hover:text-red' : 'bg-red-light text-red hover:bg-gold/8 hover:text-gold-dark'
+                }`}
+              >
                 {u.is_active ? 'Actif' : 'Inactif'}
-              </span>
+              </button>
             </div>
           ))}
         </div>
       )}
 
-      <ModalSheet open={modalOpen} onClose={() => setModalOpen(false)} title="Nouvel utilisateur">
+      <ModalSheet open={modalOpen} onClose={() => setModalOpen(false)} title={editUser ? 'Modifier utilisateur' : 'Nouvel utilisateur'}>
         <div className="space-y-4">
           <div>
             <label className="block text-xs font-semibold text-muted uppercase tracking-wider mb-2">Nom complet *</label>
             <input value={newName} onChange={(e) => setNewName(e.target.value)} placeholder="Nom complet" className="input-field" />
           </div>
-          <div>
-            <label className="block text-xs font-semibold text-muted uppercase tracking-wider mb-2">Email *</label>
-            <input type="email" value={newEmail} onChange={(e) => setNewEmail(e.target.value)} placeholder="email@exemple.com" className="input-field" />
-          </div>
-          <div>
-            <label className="block text-xs font-semibold text-muted uppercase tracking-wider mb-2">Mot de passe *</label>
-            <input type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} placeholder="Mot de passe" className="input-field" />
-          </div>
+          {!editUser && (
+            <>
+              <div>
+                <label className="block text-xs font-semibold text-muted uppercase tracking-wider mb-2">Email *</label>
+                <input type="email" value={newEmail} onChange={(e) => setNewEmail(e.target.value)} placeholder="email@exemple.com" className="input-field" />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-muted uppercase tracking-wider mb-2">Mot de passe *</label>
+                <input type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} placeholder="Mot de passe" className="input-field" />
+              </div>
+            </>
+          )}
           <div>
             <label className="block text-xs font-semibold text-muted uppercase tracking-wider mb-2">Role</label>
             <div className="flex gap-2">
@@ -149,9 +187,9 @@ export default function UsersPage() {
               </button>
             </div>
           </div>
-          <button onClick={createUser}
+          <button onClick={editUser ? updateUser : createUser}
             className="w-full py-3.5 btn-gold rounded-xl text-[15px] cursor-pointer">
-            Creer l&apos;utilisateur
+            {editUser ? 'Enregistrer' : 'Creer l\'utilisateur'}
           </button>
         </div>
       </ModalSheet>
