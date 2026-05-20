@@ -90,7 +90,7 @@ export default function ProductsAdminPage() {
 
   return (
     <div className="px-4 lg:px-6 py-4">
-      <button onClick={() => router.back()} className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white mb-4 transition-colors cursor-pointer">
+      <button onClick={() => router.back()} className="flex items-center gap-2 text-sm text-muted hover:text-foreground mb-4 transition-colors cursor-pointer">
         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
         </svg>
@@ -101,7 +101,7 @@ export default function ProductsAdminPage() {
 
       {loading ? (
         <div className="flex justify-center py-16">
-          <div className="w-9 h-9 border-[2.5px] border-gray-200 dark:border-gray-700 border-t-gold rounded-full animate-spin" />
+          <div className="w-9 h-9 border-[2.5px] border-border border-t-gold rounded-full animate-spin" />
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3 mt-4 pb-4">
@@ -109,12 +109,12 @@ export default function ProductsAdminPage() {
             <div key={p.id} onClick={() => openEdit(p)}
               className="card card-hover p-4 flex justify-between items-center cursor-pointer">
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-bold text-gray-900 dark:text-white truncate">{p.name}</p>
-                <p className="text-xs text-gray-400 mt-0.5">
+                <p className="text-sm font-bold text-foreground truncate">{p.name}</p>
+                <p className="text-xs text-muted mt-0.5">
                   {(p.category as unknown as { name: string })?.name} · {formatDH(p.price)}
                 </p>
               </div>
-              <div className={`text-xl font-bold ml-3 ${p.stock > p.low_stock_threshold ? 'text-gray-900 dark:text-white' : p.stock > 0 ? 'text-orange' : 'text-red'}`}>
+              <div className={`text-xl font-bold ml-3 ${p.stock > p.low_stock_threshold ? 'text-foreground' : p.stock > 0 ? 'text-orange' : 'text-red'}`}>
                 {p.stock}
               </div>
             </div>
@@ -127,29 +127,29 @@ export default function ProductsAdminPage() {
       <ModalSheet open={modalOpen} onClose={() => setModalOpen(false)} title={editProduct ? 'Modifier produit' : 'Nouveau produit'}>
         <div className="space-y-4">
           <div>
-            <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Nom *</label>
+            <label className="block text-xs font-semibold text-muted uppercase tracking-wider mb-2">Nom *</label>
             <input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Nom du produit" className="input-field" />
           </div>
           <div>
-            <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Categorie *</label>
+            <label className="block text-xs font-semibold text-muted uppercase tracking-wider mb-2">Categorie *</label>
             <select value={form.category_id} onChange={(e) => setForm({ ...form, category_id: e.target.value })} className="input-field">
               {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
             </select>
           </div>
           <div>
-            <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Type de stock</label>
+            <label className="block text-xs font-semibold text-muted uppercase tracking-wider mb-2">Type de stock</label>
             <div className="grid grid-cols-2 gap-2">
               <button
                 type="button"
                 onClick={() => setForm({ ...form, stock_type: 'normal' })}
-                className={`py-2.5 rounded-xl text-sm font-semibold transition-all cursor-pointer ${form.stock_type === 'normal' ? 'bg-primary text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-500'}`}
+                className={`py-2.5 rounded-xl text-sm font-semibold transition-all cursor-pointer ${form.stock_type === 'normal' ? 'gradient-dark text-white' : 'bg-primary-light text-muted'}`}
               >
                 Normal
               </button>
               <button
                 type="button"
                 onClick={() => setForm({ ...form, stock_type: 'serigraphie' })}
-                className={`py-2.5 rounded-xl text-sm font-semibold transition-all cursor-pointer ${form.stock_type === 'serigraphie' ? 'bg-primary text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-500'}`}
+                className={`py-2.5 rounded-xl text-sm font-semibold transition-all cursor-pointer ${form.stock_type === 'serigraphie' ? 'gradient-dark text-white' : 'bg-primary-light text-muted'}`}
               >
                 Serigraphie
               </button>
@@ -157,19 +157,19 @@ export default function ProductsAdminPage() {
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Stock</label>
+              <label className="block text-xs font-semibold text-muted uppercase tracking-wider mb-2">Stock</label>
               <input type="number" value={form.stock} onChange={(e) => setForm({ ...form, stock: parseInt(e.target.value) || 0 })} className="input-field" />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Prix vente (DH)</label>
+              <label className="block text-xs font-semibold text-muted uppercase tracking-wider mb-2">Prix vente (DH)</label>
               <input type="number" step="0.01" value={form.price} onChange={(e) => setForm({ ...form, price: parseFloat(e.target.value) || 0 })} className="input-field" />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Prix achat (DH)</label>
+              <label className="block text-xs font-semibold text-muted uppercase tracking-wider mb-2">Prix achat (DH)</label>
               <input type="number" step="0.01" value={form.cost_price} onChange={(e) => setForm({ ...form, cost_price: parseFloat(e.target.value) || 0 })} className="input-field" />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Seuil bas</label>
+              <label className="block text-xs font-semibold text-muted uppercase tracking-wider mb-2">Seuil bas</label>
               <input type="number" value={form.low_stock_threshold} onChange={(e) => setForm({ ...form, low_stock_threshold: parseInt(e.target.value) || 20 })} className="input-field" />
             </div>
           </div>
@@ -179,7 +179,7 @@ export default function ProductsAdminPage() {
                 Supprimer
               </button>
             )}
-            <button onClick={saveProduct} className="flex-1 py-3.5 btn-gold rounded-xl text-[15px]">
+            <button onClick={saveProduct} className="flex-1 py-3.5 btn-gold rounded-xl text-[15px] cursor-pointer">
               {editProduct ? 'Enregistrer' : 'Creer le produit'}
             </button>
           </div>

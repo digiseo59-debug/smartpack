@@ -7,7 +7,6 @@ import { FilterTabs } from '@/components/ui/filter-tabs'
 import { FabButton } from '@/components/layout/fab-button'
 import { Tag } from '@/components/ui/tag'
 import { formatDH, formatDateShort, getPaymentLabel, getDateRange } from '@/lib/utils/format'
-import { useAuth } from '@/lib/auth/auth-context'
 import type { Sale } from '@/types/database'
 
 const filterOptions = [
@@ -22,7 +21,6 @@ export default function VentesPage() {
   const [filter, setFilter] = useState('all')
   const [loading, setLoading] = useState(true)
   const router = useRouter()
-  const { isAdmin } = useAuth()
   const supabase = createClient()
 
   useEffect(() => {
@@ -56,8 +54,8 @@ export default function VentesPage() {
         <div className="px-4 lg:px-6 mb-4">
           <div className="card p-5 flex items-center justify-between">
             <div>
-              <p className="text-xs text-gray-400 font-semibold uppercase tracking-wider">{sales.length} ventes</p>
-              <p className="text-2xl font-bold text-gray-900 mt-1">{formatDH(totalAmount)}</p>
+              <p className="text-[10px] font-bold text-muted uppercase tracking-widest">{sales.length} ventes</p>
+              <p className="text-2xl font-bold text-foreground mt-1">{formatDH(totalAmount)}</p>
             </div>
             <div className="w-12 h-12 rounded-2xl gradient-gold flex items-center justify-center shadow-lg shadow-gold/20">
               <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -70,17 +68,17 @@ export default function VentesPage() {
 
       {loading ? (
         <div className="flex justify-center py-16">
-          <div className="w-9 h-9 border-[2.5px] border-gray-200 border-t-gold rounded-full animate-spin" />
+          <div className="w-9 h-9 border-[2.5px] border-border border-t-gold rounded-full animate-spin" />
         </div>
       ) : sales.length === 0 ? (
         <div className="text-center py-20">
-          <div className="w-16 h-16 mx-auto mb-4 bg-gray-50 rounded-2xl flex items-center justify-center border border-gray-100">
-            <svg className="w-8 h-8 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <div className="w-16 h-16 mx-auto mb-4 bg-primary-light rounded-2xl flex items-center justify-center border border-border">
+            <svg className="w-8 h-8 text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z" />
             </svg>
           </div>
-          <p className="text-sm text-gray-500 font-semibold">Aucune vente</p>
-          <p className="text-xs text-gray-300 mt-1">Appuyez sur + pour creer une vente</p>
+          <p className="text-sm text-muted font-semibold">Aucune vente</p>
+          <p className="text-xs text-muted/60 mt-1">Appuyez sur + pour creer une vente</p>
         </div>
       ) : (
         <div className="px-4 lg:px-6 pb-4 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
@@ -92,11 +90,11 @@ export default function VentesPage() {
             >
               <div className="flex justify-between items-start mb-3">
                 <div>
-                  <p className="text-xs text-gray-400">
+                  <p className="text-xs text-muted">
                     {formatDateShort(sale.date)}
-                    <span className="ml-2 text-gray-300">{sale.ref_number}</span>
+                    <span className="ml-2 text-muted/50">{sale.ref_number}</span>
                   </p>
-                  <h3 className="text-[15px] font-bold text-gray-900 mt-1">
+                  <h3 className="text-[15px] font-bold text-foreground mt-1">
                     {(sale.client as unknown as { name: string })?.name ?? 'Client inconnu'}
                   </h3>
                 </div>

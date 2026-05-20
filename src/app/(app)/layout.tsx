@@ -1,6 +1,6 @@
 'use client'
 
-import { usePathname, useRouter } from 'next/navigation'
+import { usePathname } from 'next/navigation'
 import { AppHeader } from '@/components/layout/app-header'
 import { BottomNav } from '@/components/layout/bottom-nav'
 import { useAuth } from '@/lib/auth/auth-context'
@@ -25,7 +25,6 @@ const pageTitles: Record<string, string> = {
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
-  const router = useRouter()
   const { user, profile, role, loading } = useAuth()
 
   useEffect(() => {
@@ -38,12 +37,12 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   if (loading || !user || !profile) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#f8faf9]">
+      <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="text-center">
           <div className="w-12 h-12 mx-auto mb-3 rounded-2xl overflow-hidden ring-2 ring-gold/20">
             <img src="/logo.jpg" alt="SmartPack" className="w-full h-full object-cover" />
           </div>
-          <div className="w-8 h-8 border-[2.5px] border-gray-200 border-t-gold rounded-full animate-spin mx-auto mt-3" />
+          <div className="w-8 h-8 border-[2.5px] border-border border-t-gold rounded-full animate-spin mx-auto mt-3" />
         </div>
       </div>
     )

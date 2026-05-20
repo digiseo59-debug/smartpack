@@ -51,13 +51,13 @@ export default function SaleDetailPage() {
   if (loading) {
     return (
       <div className="flex justify-center py-16">
-        <div className="w-9 h-9 border-[2.5px] border-gray-200 border-t-gold rounded-full animate-spin" />
+        <div className="w-9 h-9 border-[2.5px] border-border border-t-gold rounded-full animate-spin" />
       </div>
     )
   }
 
   if (!sale) {
-    return <div className="text-center py-16 text-gray-400">Vente introuvable</div>
+    return <div className="text-center py-16 text-muted">Vente introuvable</div>
   }
 
   const clientName = (sale.client as unknown as { name: string })?.name ?? 'Client inconnu'
@@ -66,7 +66,7 @@ export default function SaleDetailPage() {
 
   return (
     <div className="px-4 lg:px-6 py-4 max-w-2xl mx-auto">
-      <button onClick={() => router.back()} className="flex items-center gap-2 text-sm text-gray-400 hover:text-gray-600 mb-4 transition-colors">
+      <button onClick={() => router.back()} className="flex items-center gap-2 text-sm text-muted hover:text-foreground mb-4 transition-colors cursor-pointer">
         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
         </svg>
@@ -74,26 +74,26 @@ export default function SaleDetailPage() {
       </button>
 
       {/* Receipt */}
-      <div className="card overflow-hidden mb-5">
-        <div className="gradient-dark text-white p-5 text-center">
+      <div className="card overflow-hidden mb-5 print:shadow-none print:border-2 print:border-foreground">
+        <div className="gradient-dark text-white p-5 text-center print:bg-white print:text-black">
           <h3 className="text-base font-bold mb-0.5">Smart Pack</h3>
-          <p className="text-[11px] text-gold">Bon de vente N° {sale.ref_number}</p>
+          <p className="text-[11px] text-gold print:text-foreground">Bon de vente N° {sale.ref_number}</p>
         </div>
         <div className="p-5">
           <div className="flex justify-between text-[13px] mb-4">
-            <span className="text-gray-400">{formatDate(sale.date)}</span>
+            <span className="text-muted">{formatDate(sale.date)}</span>
             <Tag variant="cash">{getPaymentLabel(sale.payment_mode)}</Tag>
           </div>
 
-          <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl mb-4">
-            <div className="w-9 h-9 rounded-xl gradient-dark text-gold flex items-center justify-center text-sm font-bold">
+          <div className="flex items-center gap-3 p-3 bg-primary-light rounded-xl mb-4">
+            <div className="w-9 h-9 rounded-xl gradient-dark text-gold flex items-center justify-center text-sm font-bold print:bg-foreground print:text-background">
               {clientName.charAt(0).toUpperCase()}
             </div>
-            <span className="font-bold text-sm text-gray-900">{clientName}</span>
+            <span className="font-bold text-sm text-foreground">{clientName}</span>
           </div>
 
           {/* Items header */}
-          <div className="flex py-2 border-b border-gray-200 text-[10px] font-bold text-gray-400 uppercase tracking-wider">
+          <div className="flex py-2 border-b border-border text-[10px] font-bold text-muted uppercase tracking-wider">
             <span className="flex-[2]">Article</span>
             <span className="flex-[0.5] text-center">Qte</span>
             <span className="flex-[0.8] text-right">P.U</span>
@@ -101,35 +101,35 @@ export default function SaleDetailPage() {
           </div>
 
           {items.map(item => (
-            <div key={item.id} className="flex py-2.5 text-[13px] border-b border-gray-50">
-              <span className="flex-[2] text-gray-900">{item.product_name}</span>
-              <span className="flex-[0.5] text-center text-gray-500">{item.quantity}</span>
-              <span className="flex-[0.8] text-right text-gray-500">{item.unit_price.toFixed(2)}</span>
-              <span className="flex-[0.8] text-right font-bold text-gray-900">{item.subtotal.toFixed(2)}</span>
+            <div key={item.id} className="flex py-2.5 text-[13px] border-b border-border/30">
+              <span className="flex-[2] text-foreground">{item.product_name}</span>
+              <span className="flex-[0.5] text-center text-muted">{item.quantity}</span>
+              <span className="flex-[0.8] text-right text-muted">{item.unit_price.toFixed(2)}</span>
+              <span className="flex-[0.8] text-right font-bold text-foreground">{item.subtotal.toFixed(2)}</span>
             </div>
           ))}
 
           <div className="flex justify-between text-[13px] mt-3 pt-2">
-            <span className="text-gray-400">{totalQty} articles</span>
-            <span className="font-bold text-gray-900">{formatDH(sale.total_amount)}</span>
+            <span className="text-muted">{totalQty} articles</span>
+            <span className="font-bold text-foreground">{formatDH(sale.total_amount)}</span>
           </div>
 
-          <div className="flex justify-between border-t-2 border-gray-900 mt-3 pt-3 font-bold text-base">
-            <span>TOTAL</span>
-            <span className="gold-text text-lg">{formatDH(sale.total_amount)}</span>
+          <div className="flex justify-between border-t-2 border-foreground mt-3 pt-3 font-bold text-base">
+            <span className="text-foreground">TOTAL</span>
+            <span className="gold-text text-lg print:text-foreground">{formatDH(sale.total_amount)}</span>
           </div>
         </div>
       </div>
 
       {/* Actions */}
-      <div className="flex justify-center gap-6 py-4">
+      <div className="flex justify-center gap-6 py-4 print:hidden">
         <button onClick={shareWhatsApp} className="flex flex-col items-center gap-2 cursor-pointer group">
           <div className="w-12 h-12 rounded-2xl bg-[#25d366] text-white flex items-center justify-center group-hover:scale-105 transition-transform shadow-lg shadow-[#25d366]/20">
             <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
               <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" />
             </svg>
           </div>
-          <span className="text-xs text-gray-400 font-medium">WhatsApp</span>
+          <span className="text-xs text-muted font-medium">WhatsApp</span>
         </button>
         <button onClick={() => window.print()} className="flex flex-col items-center gap-2 cursor-pointer group">
           <div className="w-12 h-12 rounded-2xl gradient-dark text-gold flex items-center justify-center group-hover:scale-105 transition-transform shadow-lg shadow-black/10">
@@ -137,11 +137,11 @@ export default function SaleDetailPage() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
             </svg>
           </div>
-          <span className="text-xs text-gray-400 font-medium">Imprimer</span>
+          <span className="text-xs text-muted font-medium">Imprimer</span>
         </button>
       </div>
 
-      <div className="flex gap-2 mt-2 justify-center">
+      <div className="flex gap-2 mt-2 justify-center print:hidden">
         <Tag variant="user">par {creatorName}</Tag>
         {sale.is_credit && <Tag variant="credit">Credit: {formatDH(sale.credit_amount)}</Tag>}
         {sale.is_gift && <Tag variant="gift">Offerte</Tag>}

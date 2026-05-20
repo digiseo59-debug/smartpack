@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { SearchBox } from '@/components/ui/search-box'
-import { FabButton } from '@/components/layout/fab-button'
 import { formatDH, getStockStatus } from '@/lib/utils/format'
 import { useAuth } from '@/lib/auth/auth-context'
 import type { Product, Category } from '@/types/database'
@@ -49,7 +48,6 @@ export default function StockPage() {
 
   return (
     <>
-      {/* Type filter */}
       <div className="flex gap-2 px-4 lg:px-6 py-4 overflow-x-auto">
         {[
           { key: 'all', label: 'Tous' },
@@ -61,8 +59,8 @@ export default function StockPage() {
             onClick={() => setStockType(t.key)}
             className={`px-5 py-2 rounded-xl text-[13px] font-semibold whitespace-nowrap transition-all cursor-pointer ${
               stockType === t.key
-                ? 'bg-primary text-white shadow-lg shadow-black/10'
-                : 'card text-gray-500 hover:text-gray-700'
+                ? 'gradient-dark text-white shadow-lg shadow-black/10'
+                : 'bg-surface text-muted border border-border hover:border-gold/30'
             }`}
           >
             {t.label}
@@ -74,12 +72,11 @@ export default function StockPage() {
         <SearchBox placeholder="Rechercher un produit..." value={search} onChange={setSearch} />
       </div>
 
-      {/* Category pills */}
       <div className="flex gap-2 px-4 lg:px-6 py-3 overflow-x-auto">
         <button
           onClick={() => setCategoryFilter('all')}
           className={`px-4 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
-            categoryFilter === 'all' ? 'bg-gold text-white' : 'card text-gray-500'
+            categoryFilter === 'all' ? 'bg-gold text-white' : 'bg-surface text-muted border border-border'
           }`}
         >
           Toutes
@@ -89,7 +86,7 @@ export default function StockPage() {
             key={cat.id}
             onClick={() => setCategoryFilter(cat.slug)}
             className={`px-4 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
-              categoryFilter === cat.slug ? 'bg-gold text-white' : 'card text-gray-500'
+              categoryFilter === cat.slug ? 'bg-gold text-white' : 'bg-surface text-muted border border-border'
             }`}
           >
             {cat.name}
@@ -97,15 +94,14 @@ export default function StockPage() {
         ))}
       </div>
 
-      {/* Stats */}
       {!loading && filtered.length > 0 && (
         <div className="grid grid-cols-2 gap-3 px-4 lg:px-6 mb-3">
           <div className="card p-4">
-            <p className="text-xs text-gray-400 font-semibold uppercase tracking-wider">Stock total</p>
-            <p className="text-xl font-bold mt-1">{totalStock}</p>
+            <p className="text-[10px] font-bold text-muted uppercase tracking-widest">Stock total</p>
+            <p className="text-xl font-bold text-foreground mt-1">{totalStock}</p>
           </div>
           <div className="card p-4">
-            <p className="text-xs text-gray-400 font-semibold uppercase tracking-wider">Valeur FIFO</p>
+            <p className="text-[10px] font-bold text-muted uppercase tracking-widest">Valeur FIFO</p>
             <p className="text-xl font-bold gold-text mt-1">{formatDH(totalValue)}</p>
           </div>
         </div>
@@ -113,11 +109,11 @@ export default function StockPage() {
 
       {loading ? (
         <div className="flex justify-center py-16">
-          <div className="w-9 h-9 border-[2.5px] border-gray-200 dark:border-gray-700 border-t-gold rounded-full animate-spin" />
+          <div className="w-9 h-9 border-[2.5px] border-border border-t-gold rounded-full animate-spin" />
         </div>
       ) : filtered.length === 0 ? (
         <div className="text-center py-16">
-          <p className="text-sm text-gray-400 font-medium">Aucun produit trouve</p>
+          <p className="text-sm text-muted font-medium">Aucun produit trouve</p>
         </div>
       ) : (
         <div className="px-4 lg:px-6 pb-4 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
@@ -130,8 +126,8 @@ export default function StockPage() {
                 className={`card ${isAdmin ? 'card-hover cursor-pointer' : ''} p-4 flex justify-between items-center`}
               >
                 <div className="flex-1 min-w-0">
-                  <h4 className="text-sm font-bold truncate">{p.name}</h4>
-                  <p className="text-xs text-gray-400 mt-1">
+                  <h4 className="text-sm font-bold text-foreground truncate">{p.name}</h4>
+                  <p className="text-xs text-muted mt-1">
                     Prix: <span className="font-semibold">{formatDH(p.price)}</span>
                   </p>
                   {status === 'low' && (
@@ -146,10 +142,10 @@ export default function StockPage() {
                   )}
                 </div>
                 <div className="text-right ml-3">
-                  <div className={`text-2xl font-bold ${status === 'ok' ? '' : status === 'low' ? 'text-orange' : 'text-red'}`}>
+                  <div className={`text-2xl font-bold ${status === 'ok' ? 'text-foreground' : status === 'low' ? 'text-orange' : 'text-red'}`}>
                     {p.stock}
                   </div>
-                  <div className="text-[10px] text-gray-400 font-medium">unites</div>
+                  <div className="text-[10px] text-muted font-medium">unites</div>
                 </div>
               </div>
             )
@@ -157,7 +153,16 @@ export default function StockPage() {
         </div>
       )}
 
-      {isAdmin && <FabButton onClick={() => router.push('/admin/products')} />}
+      {isAdmin && (
+        <button
+          onClick={() => router.push('/admin/products')}
+          className="fixed bottom-24 lg:bottom-8 right-6 lg:right-8 w-14 h-14 rounded-2xl text-primary border-none text-2xl flex items-center justify-center cursor-pointer z-[999] transition-all active:scale-90 hover:scale-105 btn-gold"
+        >
+          <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
+          </svg>
+        </button>
+      )}
     </>
   )
 }

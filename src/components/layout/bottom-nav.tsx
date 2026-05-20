@@ -34,7 +34,7 @@ export function BottomNav({ role }: BottomNavProps) {
   return (
     <>
       {/* Mobile bottom nav */}
-      <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-white/95 glass flex justify-around py-1.5 pb-[max(8px,env(safe-area-inset-bottom))] z-[1000] border-t border-gray-100">
+      <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-surface/95 glass flex justify-around py-1.5 pb-[max(8px,env(safe-area-inset-bottom))] z-[1000] border-t border-border">
         {items.map((item) => {
           const isActive = pathname.startsWith(item.href)
           return (
@@ -42,7 +42,7 @@ export function BottomNav({ role }: BottomNavProps) {
               key={item.href}
               href={item.href}
               className={`flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-xl transition-all ${
-                isActive ? 'text-gold-dark' : 'text-gray-400'
+                isActive ? 'text-gold-dark' : 'text-muted'
               }`}
             >
               <div className="relative">
@@ -62,7 +62,7 @@ export function BottomNav({ role }: BottomNavProps) {
       </nav>
 
       {/* Desktop sidebar */}
-      <nav className="hidden lg:flex fixed left-0 top-16 bottom-0 w-[260px] bg-white border-r border-gray-100 flex-col py-6 px-3 z-[999]">
+      <nav className="hidden lg:flex fixed left-0 top-16 bottom-0 w-[260px] bg-surface border-r border-border flex-col py-6 px-3 z-[999]">
         <div className="space-y-1">
           {items.map((item) => {
             const isActive = pathname.startsWith(item.href)
@@ -72,8 +72,8 @@ export function BottomNav({ role }: BottomNavProps) {
                 href={item.href}
                 className={`flex items-center gap-3 px-4 py-3 rounded-xl text-[13px] font-semibold transition-all ${
                   isActive
-                    ? 'bg-primary text-white shadow-lg shadow-black/10'
-                    : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'
+                    ? 'gradient-dark text-white shadow-lg shadow-black/10'
+                    : 'text-muted hover:bg-primary-light hover:text-foreground'
                 }`}
               >
                 <svg className="w-[20px] h-[20px]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={isActive ? 2 : 1.6}>
@@ -87,14 +87,14 @@ export function BottomNav({ role }: BottomNavProps) {
         </div>
 
         {role === 'admin' && (
-          <div className="mt-6 pt-6 border-t border-gray-100">
-            <p className="px-4 text-[10px] font-bold text-gray-300 uppercase tracking-widest mb-3">Admin</p>
+          <div className="mt-6 pt-6 border-t border-border">
+            <p className="px-4 text-[10px] font-bold text-muted/50 uppercase tracking-widest mb-3">Admin</p>
             <Link
               href="/admin"
               className={`flex items-center gap-3 px-4 py-3 rounded-xl text-[13px] font-semibold transition-all ${
                 pathname.startsWith('/admin')
-                  ? 'bg-primary text-white shadow-lg shadow-black/10'
-                  : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'
+                  ? 'gradient-dark text-white shadow-lg shadow-black/10'
+                  : 'text-muted hover:bg-primary-light hover:text-foreground'
               }`}
             >
               <svg className="w-[20px] h-[20px]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.6}>
@@ -107,12 +107,12 @@ export function BottomNav({ role }: BottomNavProps) {
         )}
 
         <div className="mt-auto px-4 py-3">
-          <div className="bg-gray-50 rounded-xl p-3.5 border border-gray-100">
+          <div className="bg-primary-light rounded-xl p-3.5 border border-border">
             <div className="flex items-center gap-2 mb-1">
               <div className="w-1.5 h-1.5 rounded-full bg-gold" />
-              <p className="text-[11px] font-bold text-gray-900">SmartPack</p>
+              <p className="text-[11px] font-bold text-foreground">SmartPack</p>
             </div>
-            <p className="text-[10px] text-gray-400 pl-3.5">Emballage Meknes</p>
+            <p className="text-[10px] text-muted pl-3.5">Emballage Meknes</p>
           </div>
         </div>
       </nav>

@@ -25,14 +25,14 @@ export default function AdminPage() {
 
   return (
     <div className="px-4 lg:px-6 py-4">
-      <p className="text-xs text-gray-400 font-semibold uppercase tracking-widest mb-5">Panneau d'administration</p>
+      <p className="text-[10px] font-bold text-muted uppercase tracking-widest mb-5">Panneau d&apos;administration</p>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         {adminLinks.map(link => (
           <button
             key={link.href}
             onClick={() => router.push(link.href)}
-            className="card card-hover p-5 flex items-center gap-4 text-left"
+            className="card card-hover p-5 flex items-center gap-4 text-left cursor-pointer"
           >
             <div className="w-11 h-11 rounded-xl gradient-dark text-gold flex items-center justify-center shrink-0">
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -40,10 +40,10 @@ export default function AdminPage() {
               </svg>
             </div>
             <div className="flex-1">
-              <p className="text-sm font-bold text-gray-900">{link.label}</p>
-              <p className="text-xs text-gray-400 mt-0.5">{link.desc}</p>
+              <p className="text-sm font-bold text-foreground">{link.label}</p>
+              <p className="text-xs text-muted mt-0.5">{link.desc}</p>
             </div>
-            <svg className="w-4 h-4 text-gray-300 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg className="w-4 h-4 text-muted/50 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
           </button>

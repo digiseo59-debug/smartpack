@@ -40,8 +40,8 @@ export default function SuppliersPage() {
   }
 
   return (
-    <div className="px-4 py-3">
-      <button onClick={() => router.back()} className="flex items-center gap-2 text-sm text-gray-500 mb-3">
+    <div className="px-4 lg:px-6 py-4">
+      <button onClick={() => router.back()} className="flex items-center gap-2 text-sm text-muted hover:text-foreground mb-4 transition-colors cursor-pointer">
         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
         </svg>
@@ -49,25 +49,25 @@ export default function SuppliersPage() {
       </button>
 
       <button onClick={() => setModalOpen(true)}
-        className="w-full py-3 bg-orange text-white rounded-[10px] text-sm font-semibold mb-4">
+        className="w-full py-3 bg-orange text-white rounded-xl text-sm font-semibold mb-4 cursor-pointer">
         + Ajouter un fournisseur
       </button>
 
       {loading ? (
         <div className="flex justify-center py-10">
-          <div className="w-9 h-9 border-3 border-gray-200 border-t-orange rounded-full animate-spin" />
+          <div className="w-9 h-9 border-[2.5px] border-border border-t-gold rounded-full animate-spin" />
         </div>
       ) : (
         <div className="space-y-2">
           {suppliers.map(s => (
-            <div key={s.id} className="bg-white rounded-xl p-4 flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-orange text-white flex items-center justify-center text-sm font-semibold">
+            <div key={s.id} className="card p-4 flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-orange text-white flex items-center justify-center text-sm font-semibold">
                 {s.name.charAt(0).toUpperCase()}
               </div>
               <div className="flex-1">
-                <div className="text-sm font-semibold">{s.name}</div>
-                {s.location && <div className="text-xs text-gray-400">{s.location}</div>}
-                {s.phone && <div className="text-xs text-gray-400">{s.phone}</div>}
+                <div className="text-sm font-semibold text-foreground">{s.name}</div>
+                {s.location && <div className="text-xs text-muted">{s.location}</div>}
+                {s.phone && <div className="text-xs text-muted">{s.phone}</div>}
               </div>
               {s.credit > 0 && (
                 <span className="text-xs font-semibold px-2 py-1 rounded-md bg-red-light text-red">
@@ -82,22 +82,19 @@ export default function SuppliersPage() {
       <ModalSheet open={modalOpen} onClose={() => setModalOpen(false)} title="Nouveau fournisseur">
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-600 mb-1.5">Nom *</label>
-            <input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Nom du fournisseur"
-              className="w-full px-3.5 py-3 border-[1.5px] border-gray-200 rounded-[10px] text-sm outline-none focus:border-primary" />
+            <label className="block text-xs font-semibold text-muted uppercase tracking-wider mb-2">Nom *</label>
+            <input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Nom du fournisseur" className="input-field" />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-600 mb-1.5">Telephone</label>
-            <input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder="06XXXXXXXX"
-              className="w-full px-3.5 py-3 border-[1.5px] border-gray-200 rounded-[10px] text-sm outline-none focus:border-primary" />
+            <label className="block text-xs font-semibold text-muted uppercase tracking-wider mb-2">Telephone</label>
+            <input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder="06XXXXXXXX" className="input-field" />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-600 mb-1.5">Ville</label>
-            <input value={form.location} onChange={(e) => setForm({ ...form, location: e.target.value })} placeholder="Ville"
-              className="w-full px-3.5 py-3 border-[1.5px] border-gray-200 rounded-[10px] text-sm outline-none focus:border-primary" />
+            <label className="block text-xs font-semibold text-muted uppercase tracking-wider mb-2">Ville</label>
+            <input value={form.location} onChange={(e) => setForm({ ...form, location: e.target.value })} placeholder="Ville" className="input-field" />
           </div>
           <button onClick={createSupplier}
-            className="w-full py-3.5 bg-orange text-white rounded-[10px] text-[15px] font-semibold">
+            className="w-full py-3.5 bg-orange text-white rounded-xl text-[15px] font-semibold cursor-pointer">
             Creer le fournisseur
           </button>
         </div>

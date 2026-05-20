@@ -6,13 +6,11 @@ import { createClient } from '@/lib/supabase/client'
 import { ModalSheet } from '@/components/ui/modal-sheet'
 import { SearchBox } from '@/components/ui/search-box'
 import { formatDH } from '@/lib/utils/format'
-import { useAuth } from '@/lib/auth/auth-context'
 import toast from 'react-hot-toast'
 import type { Client, Category, Product, SaleFormArticle, PaymentMode } from '@/types/database'
 
 export default function NewSalePage() {
   const router = useRouter()
-  const { user } = useAuth()
   const supabase = createClient()
 
   const [selectedClient, setSelectedClient] = useState<Client | null>(null)
@@ -36,7 +34,6 @@ export default function NewSalePage() {
   const [clientSearch, setClientSearch] = useState('')
   const [catSearch, setCatSearch] = useState('')
   const [prodSearch, setProdSearch] = useState('')
-  const [selectedCategoryId, setSelectedCategoryId] = useState<string>('')
   const [selectedCategoryName, setSelectedCategoryName] = useState('')
 
   useEffect(() => {
@@ -65,7 +62,6 @@ export default function NewSalePage() {
   }
 
   function selectCategory(cat: Category) {
-    setSelectedCategoryId(cat.id)
     setSelectedCategoryName(cat.name)
     setCategoryModalOpen(false)
     setProductModalOpen(true)
@@ -147,7 +143,6 @@ export default function NewSalePage() {
       return
     }
 
-    // Get ref number
     const { data: sale } = await supabase
       .from('sales')
       .select('ref_number')
@@ -175,10 +170,9 @@ export default function NewSalePage() {
 
   return (
     <div className="px-4 py-3 space-y-3">
-      {/* Back button */}
       <button
         onClick={() => router.back()}
-        className="flex items-center gap-2 text-sm text-gray-500 mb-2"
+        className="flex items-center gap-2 text-sm text-muted hover:text-foreground mb-2 transition-colors cursor-pointer"
       >
         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -187,29 +181,29 @@ export default function NewSalePage() {
       </button>
 
       {/* Client Section */}
-      <div className="bg-white rounded-xl p-4 shadow-sm">
-        <div className="text-xs font-semibold text-primary uppercase tracking-wider mb-3">Client</div>
+      <div className="card p-4">
+        <div className="text-xs font-semibold text-gold uppercase tracking-wider mb-3">Client</div>
         <button
           onClick={() => setClientModalOpen(true)}
-          className="w-full px-3.5 py-3 border-[1.5px] border-gray-200 rounded-[10px] text-sm bg-white flex justify-between items-center"
+          className="w-full px-3.5 py-3 border-[1.5px] border-border rounded-xl text-sm bg-surface flex justify-between items-center cursor-pointer hover:border-gold/40 transition-colors"
         >
-          <span className="flex items-center gap-2">
-            <svg className="w-4 h-4 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <span className="flex items-center gap-2 text-foreground">
+            <svg className="w-4 h-4 text-gold" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
             </svg>
             {selectedClient?.name ?? 'Selectionner un client'}
           </span>
-          <svg className="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg className="w-4 h-4 text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
           </svg>
         </button>
         {selectedClient && (
-          <div className="mt-2 inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-medium bg-primary-light text-primary">
+          <div className="mt-2 inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-medium bg-gold-50 text-gold-dark">
             <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
             </svg>
             {selectedClient.name}
-            <button onClick={() => setSelectedClient(null)} className="ml-1">
+            <button onClick={() => setSelectedClient(null)} className="ml-1 cursor-pointer">
               <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
@@ -219,21 +213,21 @@ export default function NewSalePage() {
       </div>
 
       {/* Articles Section */}
-      <div className="bg-white rounded-xl p-4 shadow-sm">
-        <div className="text-xs font-semibold text-primary uppercase tracking-wider mb-3">Articles</div>
+      <div className="card p-4">
+        <div className="text-xs font-semibold text-gold uppercase tracking-wider mb-3">Articles</div>
 
         {articles.length === 0 ? (
-          <p className="text-center py-5 text-gray-300 text-sm">Aucun article ajoute</p>
+          <p className="text-center py-5 text-muted/60 text-sm">Aucun article ajoute</p>
         ) : (
           <div className="space-y-2.5 mb-3">
             {articles.map((art) => (
-              <div key={art.id} className="bg-gray-50 rounded-[10px] p-3.5">
+              <div key={art.id} className="bg-primary-light rounded-xl p-3.5">
                 <div className="flex justify-between items-start mb-2.5">
                   <div>
-                    <div className="text-sm font-semibold">{art.name}</div>
-                    <div className="text-[11px] text-gray-400">Stock: {art.stock} Piece</div>
+                    <div className="text-sm font-semibold text-foreground">{art.name}</div>
+                    <div className="text-[11px] text-muted">Stock: {art.stock} Piece</div>
                   </div>
-                  <button onClick={() => removeArticle(art.id)} className="text-red-500 text-lg">
+                  <button onClick={() => removeArticle(art.id)} className="text-red cursor-pointer">
                     <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                     </svg>
@@ -241,26 +235,26 @@ export default function NewSalePage() {
                 </div>
                 <div className="grid grid-cols-[1fr_1fr_auto] gap-2.5 items-end">
                   <div>
-                    <label className="text-[11px] text-gray-400 block mb-1">Quantite</label>
+                    <label className="text-[11px] text-muted block mb-1">Quantite</label>
                     <input
                       type="number"
                       value={art.qty}
                       min={1}
                       onChange={(e) => updateArticle(art.id, 'qty', parseInt(e.target.value) || 1)}
-                      className="w-full py-2.5 px-2 border-[1.5px] border-gray-300 rounded-lg text-sm text-center"
+                      className="input-field !py-2.5 text-center"
                     />
                   </div>
                   <div>
-                    <label className="text-[11px] text-gray-400 block mb-1">Prix (DH)</label>
+                    <label className="text-[11px] text-muted block mb-1">Prix (DH)</label>
                     <input
                       type="number"
                       value={art.price}
                       step={0.01}
                       onChange={(e) => updateArticle(art.id, 'price', parseFloat(e.target.value) || 0)}
-                      className="w-full py-2.5 px-2 border-[1.5px] border-gray-300 rounded-lg text-sm text-center"
+                      className="input-field !py-2.5 text-center"
                     />
                   </div>
-                  <div className="text-sm font-bold text-primary text-right pb-2">
+                  <div className="text-sm font-bold gold-text text-right pb-2">
                     {formatDH(art.qty * art.price)}
                   </div>
                 </div>
@@ -272,7 +266,7 @@ export default function NewSalePage() {
         <div className="flex gap-2.5">
           <button
             onClick={() => setCategoryModalOpen(true)}
-            className="flex-1 py-3 bg-white text-primary border-[1.5px] border-primary rounded-[10px] text-sm font-semibold flex items-center justify-center gap-1.5"
+            className="flex-1 py-3 bg-surface text-gold border-[1.5px] border-gold/30 rounded-xl text-sm font-semibold flex items-center justify-center gap-1.5 cursor-pointer hover:border-gold transition-colors"
           >
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -281,7 +275,7 @@ export default function NewSalePage() {
           </button>
           <button
             onClick={addSpecialProduct}
-            className="flex-1 py-3 bg-white text-purple border-[1.5px] border-purple rounded-[10px] text-sm font-semibold flex items-center justify-center gap-1.5"
+            className="flex-1 py-3 bg-surface text-purple border-[1.5px] border-purple/30 rounded-xl text-sm font-semibold flex items-center justify-center gap-1.5 cursor-pointer hover:border-purple transition-colors"
           >
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
@@ -292,21 +286,21 @@ export default function NewSalePage() {
       </div>
 
       {/* Gift toggle */}
-      <div className="bg-white rounded-xl p-4 shadow-sm">
-        <div className="text-xs font-semibold text-primary uppercase tracking-wider mb-3">Type de vente</div>
+      <div className="card p-4">
+        <div className="text-xs font-semibold text-gold uppercase tracking-wider mb-3">Type de vente</div>
         <div className="flex justify-between items-center py-3">
           <div>
-            <h4 className="text-sm font-semibold flex items-center gap-1.5">
+            <h4 className="text-sm font-semibold text-foreground flex items-center gap-1.5">
               <svg className="w-4 h-4 text-orange" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7" />
               </svg>
               Vente offerte
             </h4>
-            <p className="text-xs text-gray-400">Toute la vente sera offerte</p>
+            <p className="text-xs text-muted">Toute la vente sera offerte</p>
           </div>
           <button
             onClick={() => setIsGift(!isGift)}
-            className={`w-12 h-[26px] rounded-full relative transition-colors cursor-pointer ${isGift ? 'bg-primary' : 'bg-gray-300'}`}
+            className={`w-12 h-[26px] rounded-full relative transition-colors cursor-pointer ${isGift ? 'bg-gold' : 'bg-border'}`}
           >
             <span className={`absolute w-[22px] h-[22px] bg-white rounded-full top-0.5 left-0.5 transition-transform shadow-sm ${isGift ? 'translate-x-[22px]' : ''}`} />
           </button>
@@ -314,8 +308,8 @@ export default function NewSalePage() {
       </div>
 
       {/* Payment Section */}
-      <div className="bg-white rounded-xl p-4 shadow-sm">
-        <div className="text-xs font-semibold text-primary uppercase tracking-wider mb-3">Paiement</div>
+      <div className="card p-4">
+        <div className="text-xs font-semibold text-gold uppercase tracking-wider mb-3">Paiement</div>
         <div className="flex gap-2 mt-2">
           {([
             { mode: 'cash' as const, label: 'Especes', icon: 'M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z' },
@@ -325,10 +319,10 @@ export default function NewSalePage() {
             <button
               key={mode}
               onClick={() => setPaymentMode(mode)}
-              className={`flex-1 py-2.5 border-[1.5px] rounded-[10px] text-center text-xs font-medium transition-all flex flex-col items-center gap-1 ${
+              className={`flex-1 py-2.5 border-[1.5px] rounded-xl text-center text-xs font-medium transition-all flex flex-col items-center gap-1 cursor-pointer ${
                 paymentMode === mode
-                  ? 'bg-primary text-white border-primary'
-                  : 'text-gray-500 border-gray-200'
+                  ? 'gradient-dark text-white border-transparent'
+                  : 'text-muted border-border hover:border-gold/30'
               }`}
             >
               <svg className="w-[18px] h-[18px]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -340,10 +334,10 @@ export default function NewSalePage() {
         </div>
 
         <div className="flex justify-between items-center py-3 mt-3">
-          <h4 className="text-sm font-semibold">Vente a credit</h4>
+          <h4 className="text-sm font-semibold text-foreground">Vente a credit</h4>
           <button
             onClick={() => setIsCredit(!isCredit)}
-            className={`w-12 h-[26px] rounded-full relative transition-colors cursor-pointer ${isCredit ? 'bg-primary' : 'bg-gray-300'}`}
+            className={`w-12 h-[26px] rounded-full relative transition-colors cursor-pointer ${isCredit ? 'bg-gold' : 'bg-border'}`}
           >
             <span className={`absolute w-[22px] h-[22px] bg-white rounded-full top-0.5 left-0.5 transition-transform shadow-sm ${isCredit ? 'translate-x-[22px]' : ''}`} />
           </button>
@@ -351,26 +345,26 @@ export default function NewSalePage() {
       </div>
 
       {/* Summary */}
-      <div className="bg-white rounded-xl p-4 shadow-sm">
-        <div className="text-xs font-semibold text-primary uppercase tracking-wider mb-3">Recapitulatif</div>
-        <div className="flex justify-between items-center py-4 border-t-2 border-gray-200 mt-2">
-          <span className="text-sm text-gray-500">Total</span>
-          <strong className="text-[22px] text-primary">{formatDH(total)}</strong>
+      <div className="card p-4">
+        <div className="text-xs font-semibold text-gold uppercase tracking-wider mb-3">Recapitulatif</div>
+        <div className="flex justify-between items-center py-4 border-t-2 border-border mt-2">
+          <span className="text-sm text-muted">Total</span>
+          <strong className="text-[22px] gold-text">{formatDH(total)}</strong>
         </div>
         <input
           type="text"
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
           placeholder="Notes (optionnel)"
-          className="w-full px-3.5 py-3 border-[1.5px] border-gray-200 rounded-[10px] text-sm outline-none focus:border-primary mt-3"
+          className="input-field mt-3"
         />
         <button
           onClick={confirmSale}
           disabled={submitting}
-          className="w-full py-3.5 bg-primary text-white border-none rounded-[10px] text-[15px] font-semibold mt-4 flex items-center justify-center gap-2 transition-all active:scale-[0.98] disabled:bg-gray-300 disabled:cursor-not-allowed"
+          className="w-full py-3.5 btn-gold rounded-xl text-[15px] mt-4 flex items-center justify-center gap-2 transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
         >
           {submitting ? (
-            <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+            <div className="w-5 h-5 border-2 border-black/20 border-t-black rounded-full animate-spin" />
           ) : (
             <>
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -387,7 +381,7 @@ export default function NewSalePage() {
         <SearchBox placeholder="Rechercher..." value={clientSearch} onChange={setClientSearch} />
         <button
           onClick={() => { setClientModalOpen(false); toast('Creation client - contactez admin') }}
-          className="inline-flex items-center gap-1 px-3.5 py-2 border-[1.5px] border-dashed border-primary rounded-[10px] text-primary text-[13px] font-semibold mb-3"
+          className="inline-flex items-center gap-1 px-3.5 py-2 border-[1.5px] border-dashed border-gold rounded-xl text-gold text-[13px] font-semibold mb-3 mt-3 cursor-pointer"
         >
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -398,16 +392,14 @@ export default function NewSalePage() {
           <div
             key={c.id}
             onClick={() => { setSelectedClient(c); setClientModalOpen(false) }}
-            className="flex items-center py-3 border-b border-gray-50 cursor-pointer"
+            className="flex items-center py-3 border-b border-border/30 cursor-pointer hover:bg-primary-light/50 rounded-lg px-2 transition-colors"
           >
-            <div className="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center text-base mr-3 shrink-0">
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-              </svg>
+            <div className="w-10 h-10 rounded-xl gradient-dark text-gold flex items-center justify-center text-base mr-3 shrink-0 font-bold">
+              {c.name.charAt(0).toUpperCase()}
             </div>
             <div className="flex-1">
-              <div className="text-sm font-semibold">{c.name}</div>
-              {c.location && <div className="text-xs text-gray-400">{c.location}</div>}
+              <div className="text-sm font-semibold text-foreground">{c.name}</div>
+              {c.location && <div className="text-xs text-muted">{c.location}</div>}
             </div>
             {c.credit > 0 && (
               <span className="text-xs font-semibold px-2.5 py-1 rounded-md bg-red-light text-red">{formatDH(c.credit)}</span>
@@ -424,18 +416,18 @@ export default function NewSalePage() {
             <div
               key={cat.id}
               onClick={() => selectCategory(cat)}
-              className="bg-gray-50 rounded-[14px] p-5 text-center cursor-pointer transition-all active:scale-[0.97] border-2 border-transparent hover:border-primary"
+              className="bg-primary-light rounded-2xl p-5 text-center cursor-pointer transition-all active:scale-[0.97] border-2 border-transparent hover:border-gold/40"
             >
               <div className={`w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-2.5 text-2xl text-white ${
                 cat.color === 'cat-orange' ? 'bg-orange' :
                 cat.color === 'cat-brown' ? 'bg-[#8d6e63]' :
-                cat.color === 'cat-green' ? 'bg-primary' : 'bg-gray-400'
+                cat.color === 'cat-green' ? 'bg-gold' : 'bg-muted'
               }`}>
                 <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
                 </svg>
               </div>
-              <div className="text-sm font-semibold">{cat.name}</div>
+              <div className="text-sm font-semibold text-foreground">{cat.name}</div>
             </div>
           ))}
         </div>
@@ -453,21 +445,21 @@ export default function NewSalePage() {
           <div
             key={p.id}
             onClick={() => addProduct(p)}
-            className="flex justify-between items-center py-3.5 border-b border-gray-50 cursor-pointer"
+            className="flex justify-between items-center py-3.5 border-b border-border/30 cursor-pointer hover:bg-primary-light/50 rounded-lg px-2 transition-colors"
           >
             <div>
-              <h4 className="text-sm font-semibold">{p.name}</h4>
-              <div className="text-[13px] text-primary font-medium mt-0.5">{formatDH(p.price)}</div>
+              <h4 className="text-sm font-semibold text-foreground">{p.name}</h4>
+              <div className="text-[13px] gold-text font-medium mt-0.5">{formatDH(p.price)}</div>
             </div>
             <div className="text-right">
-              <div className={`text-base font-bold ${p.stock === 0 ? 'text-red' : p.stock < 50 ? 'text-orange' : 'text-primary'}`}>
+              <div className={`text-base font-bold ${p.stock === 0 ? 'text-red' : p.stock < 50 ? 'text-orange' : 'text-foreground'}`}>
                 {p.stock}
               </div>
-              <div className="text-[11px] text-gray-400">en stock</div>
+              <div className="text-[11px] text-muted">en stock</div>
               <span className={`inline-block px-2 py-0.5 rounded text-[10px] font-semibold mt-1 ${
                 p.stock === 0 ? 'bg-red-light text-red' :
                 p.stock < p.low_stock_threshold ? 'bg-orange-light text-orange' :
-                'bg-primary-light text-primary'
+                'bg-gold-50 text-gold-dark'
               }`}>
                 {p.stock === 0 ? 'Rupture' : p.stock < p.low_stock_threshold ? 'Stock bas' : 'OK'}
               </span>
@@ -479,16 +471,16 @@ export default function NewSalePage() {
       {/* Success Modal */}
       <ModalSheet open={successModalOpen} onClose={closeAndReset} title="">
         <div className="text-center py-8">
-          <div className="w-[70px] h-[70px] bg-primary-light rounded-full flex items-center justify-center mx-auto mb-4">
-            <svg className="w-8 h-8 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <div className="w-[70px] h-[70px] bg-gold-50 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg className="w-8 h-8 text-gold" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
             </svg>
           </div>
-          <h3 className="text-lg font-semibold text-primary mb-2">Vente creee avec succes !</h3>
-          <p className="text-[13px] text-gray-400 mb-5">Bon N° {lastRefNumber}</p>
+          <h3 className="text-lg font-semibold text-foreground mb-2">Vente creee avec succes !</h3>
+          <p className="text-[13px] text-muted mb-5">Bon N° {lastRefNumber}</p>
           <button
             onClick={closeAndReset}
-            className="w-full py-3.5 bg-primary text-white border-none rounded-[10px] text-[15px] font-semibold"
+            className="w-full py-3.5 btn-gold rounded-xl text-[15px] cursor-pointer"
           >
             Retour aux ventes
           </button>

@@ -220,3 +220,17 @@ input[type="number"] { -moz-appearance: textfield; }
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
+
+@media print {
+  body { background: white !important; color: black !important; }
+  .gradient-dark, .gradient-header { background: white !important; color: black !important; }
+  .gold-text { -webkit-text-fill-color: #1a1a1a !important; }
+  .card { box-shadow: none !important; border: 2px solid #1a1a1a !important; break-inside: avoid; }
+  header, nav, [class*="print:hidden"] { display: none !important; }
+  main { padding: 0 !important; margin: 0 !important; }
+
+  @page {
+    size: A4;
+    margin: 15mm;
+  }
+}
